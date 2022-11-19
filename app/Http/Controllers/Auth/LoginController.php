@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use \Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
@@ -19,7 +22,7 @@ class LoginController extends Controller
     */
 
     use AuthenticatesUsers;
-
+    
     /**
      * Where to redirect users after login.
      *
@@ -40,5 +43,20 @@ class LoginController extends Controller
 
     public function username(){
       return 'username';
+    }
+
+    public function showLoginForm()
+    {
+        return view('auth.login');
+    }
+
+    public function authenticated(Request $request, $user)
+    {       
+        DB::table('logins')->insert([
+          'username' => $user->username, 
+          'ip' => $request->ip(), 
+          'user-agent' => $request->header('User-Agent'),
+          'created_at' => now()
+        ]);    
     }
 }
