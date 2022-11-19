@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="{{ url('assets/dist/css/AdminLTE.min.css') }}">
   <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
-  <link rel="stylesheet" href="{{ url('assets/dist/css/skins/_all-skins.min.css') }}">
+  <link rel="stylesheet" href="{{ url('assets/dist/css/skins/skin-blue.min.css') }}">
   <!-- Morris chart -->
   <link rel="stylesheet" href="{{ url('assets/bower_components/morris.js/morris.css') }}">
   <!-- jvectormap -->
@@ -36,7 +36,8 @@
      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
      <![endif]-->
 
-     <link rel="stylesheet" href="{{ url('css/select2.min.css') }}">
+     {{-- <link rel="stylesheet" href="{{ url('assets/dist/css/alt/AdminLTE-select2.min.css') }}">  --}}  
+
 
      <!-- Google Font -->
      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">

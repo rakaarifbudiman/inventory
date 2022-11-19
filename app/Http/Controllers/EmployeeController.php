@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Agama;
+use App\Http\Requests;
+use App\Models\Gender;
+use App\Models\Category;
+use App\Models\Employee;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
-use App\Http\Requests;
-use App\Models\Employee;
-use App\Models\Agama;
-use App\Models\Gender;
-use App\Models\User;
+use App\Http\Controllers\Controller;
 
 class EmployeeController extends Controller
 {
@@ -91,7 +94,11 @@ class EmployeeController extends Controller
             return back()->with('pesan','Kamu tidak memiliki akses administrator');
         }
         $employees = User::findOrFail($id);
-        return view('gudang/employee/edit', compact('employees'));
+        $roles = explode(';',$employees->role);  
+        //$contains = Str::containsAll($employees->role, ['ATK']);       
+        
+        $categories = Category::all();
+        return view('gudang/employee/edit', compact('employees','categories','roles'));
     }
 
     /**
@@ -102,10 +109,11 @@ class EmployeeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id){
-
+        
         $employees = User::find($id);
         $employees->akses           = $request->akses;   
-        $employees->active           = $request->active;       
+        $employees->active           = $request->active;   
+        $employees->role= collect($request->input('role'))->implode(';');         
         $employees->save();
         return redirect('employee')->with('pesan', 'Data berhasil di update');
     }

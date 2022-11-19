@@ -54,7 +54,7 @@ class ReportController extends Controller
         if(Auth::user()->akses !== 'admin'){
             return back()->with('error','Gagal...Kamu tidak punya otorisasi');
         }    
-      	$sells = Sell::find($request->id_sell);
+      	$sells = Sell::find($request->id_sell);        
     	$sells->delete();
     	return back()->with('pesan', 'Data berhasil dihapus');
     }

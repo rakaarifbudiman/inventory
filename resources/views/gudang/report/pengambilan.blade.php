@@ -84,13 +84,9 @@
                 <tbody>
                   @foreach($sells as $sell)
                   <tr>
-                    @if(Auth::user()->akses !== 'admin')
-                    <td style="display: none;" class="none">
-                      <button style="display: none;" class="btn btn-danger btn-xs" data-delid={{$sell->id_sell}} data-toggle="modal" data-target="#delete"><i class="glyphicon glyphicon-trash"></i> Hapus</button> 
-          					</td>
-                    @else
-                    <td class="none">
-                      <button class="btn btn-danger btn-xs" data-delid={{$sell->id_sell}} data-toggle="modal" data-target="#delete"><i class="glyphicon glyphicon-trash"></i> Hapus</button> 
+                    @if(Auth::user()->akses == 'admin')                    
+                    <td>
+                      <button class="btn btn-danger btn-xs" data-delsell={{$sell->id}} data-toggle="modal" data-target="#delete-sell"><i class="glyphicon glyphicon-trash"></i> Hapus</button> 
                     </td>
                     @endif
                     <td>{{ $no++ }}</td>
@@ -162,10 +158,12 @@
       'autoWidth'   : true
     })
   })
+
+  
 </script>
 
 <!-- modal -->
-<div class="modal fade" id="delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="delete-sell" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content" style="background-color: rgb(200, 200, 200)">
       <div class="modal-header">
@@ -178,7 +176,7 @@
         {{csrf_field()}}
         <div class="modal-body" style="background-color: rgb(230, 230, 230)">
           <p class="text-center">Apakah anda yakin akan menghapus ini?</p>
-          <input type="hidden" name="id_sell" id="del_id" value="">
+          <input type="hidden" name="id_sell" id="del_id_sell" value="">
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-danger">Ya, hapus ini</button>

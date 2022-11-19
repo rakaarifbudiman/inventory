@@ -175,7 +175,7 @@ img {
 .bg-purple,
 .bg-maroon,
 .bg-black {
-  color: #f9f9f9 !important;
+  color: #f56954 !important;
 }
 .bg-gray {
   background-color: #eaeaec !important;
@@ -2820,6 +2820,6 @@ Component: timeline
 }
 
 #autocomplete-result tr th{
-  background-color: #3b3b3b;
-  color:#ffffff;
+  background-color: #ffffff;
+  color:#5897fb;
 }

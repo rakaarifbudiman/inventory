@@ -3,6 +3,15 @@
 <head>
 	@include('templates.head')
 	<title>Edit Karyawan</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" />
+	<script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.full.min.js"></script>	
+	<style>
+		.select2-selection__choice {
+  		color: blueviolet !important
+		}
+  
+	</style>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 	<div class="wrapper">
@@ -50,12 +59,30 @@
 									<div>
 										<label>Aktif ?</label>
 										<select class="form-control" name="active">																					
-											<option {{ $employees->active }}>{{ $employees->active==1 ? 'Ya' : 'Tidak' }}</option>
+											<option value={{ $employees->active }}>{{ $employees->active==1 ? 'Ya' : 'Tidak' }}</option>
 											<option value=1>Ya</option>		
 											<option value=0>Tidak</option>												
 										</select>										
 									</div><br>
-									<br><br>
+									@if ($employees->akses=='admin')
+									<div class="form-group">
+										<label for="role">Role</label>
+										<select class="select2-multiple form-control" name="role[]" multiple="multiple"
+										  id="role">
+										  @foreach($categories as $category)
+                                            <option value="{{$category->nama_kategori}}"
+                                              @foreach ($roles as $role)
+                                                {{($category->nama_kategori==$role) ? 'selected' : ''}}
+                                              @endforeach
+                                              >{{$category->nama_kategori}}
+                                            </option>                                                  
+                                          @endforeach									  
+										    								              
+										</select>
+									  </div>
+									<br>
+									@endif
+									
 									<div>
 										<input class="btn btn-primary" type="submit" name="submit" value="Simpan">
 										<input type="reset" class="btn btn-danger" value="Reset">
@@ -77,5 +104,18 @@
 		</aside>
 	</div>
 @include('templates.scripts')
+       
+      <script>
+        $(document).ready(function() {
+            // Select2 Multiple
+            $('#role').select2({
+                placeholder: "Select",
+                allowClear: true
+            });
+
+        });
+
+    </script>
+	
 </body>
 </html>

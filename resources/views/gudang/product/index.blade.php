@@ -68,7 +68,7 @@
                       <a href="product/{{$product->id}}/show"><button class="btn btn-primary btn-xs">Detail</button></a>
 											@if(Auth::user()->akses == 'admin')
 	                      <a href="product/{{$product->id}}/edit"><button class="btn btn-warning btn-xs">Edit</button></a>
-	                      <button class="btn btn-danger btn-xs" data-delid={{$product->id}} data-toggle="modal" data-target="#delete"><i class="glyphicon glyphicon-trash"></i> Hapus</button>
+	                      <button class="btn btn-danger btn-xs" data-delproduk={{$product->id}} data-toggle="modal" data-target="#delete-produk"><i class="glyphicon glyphicon-trash"></i> Hapus</button>
 											@endif
                     </td>
                     <td>{{ $no++ }}</td>
@@ -143,7 +143,7 @@
 </script>
 
 <!-- modal -->
-<div class="modal fade" id="delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="delete-produk" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content" style="background-color: rgb(200, 200, 200)">
       <div class="modal-header">
@@ -156,7 +156,7 @@
         {{csrf_field()}}
         <div class="modal-body" style="background-color: rgb(230, 230, 230)">
           <p class="text-center">Apakah anda yakin akan menghapus ini?</p>
-          <input type="hidden" name="id_produk" id="del_id" value="">
+          <input type="hidden" name="id_produk" id="del_id_produk" value="">
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-danger">Ya, hapus ini</button>

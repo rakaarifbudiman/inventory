@@ -254,8 +254,14 @@ class ProductController extends Controller
             return back()->with('error','Gagal...Kamu tidak punya otorisasi');
         }
         
-      $products = Product::find($request->id_produk);
-      File::delete('image/'.$products->image);
+      $products = Product::find($request->id_produk);      
+      $sell =Sell::where('id_produk',$products->id)->count();
+      $purchase = Purchase::where('id_produk',$products->id)->count();   
+        if($sell>0 || $purchase>0){
+            return back()->with('error','Gagal...produk tidak bisa dihapus karena sudah ada transaksi pembelian ('.$purchase.')/pengambilan ('.$sell.')');
+        }
+
+      File::delete(('/image/'.$products->image));
       $products->delete();
 
       return back()->with('pesan', 'Data berhasil dihapus');

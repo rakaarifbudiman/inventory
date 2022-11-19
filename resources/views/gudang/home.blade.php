@@ -57,7 +57,7 @@
                         @foreach($sells as $sell)
                         <tr>
                           <td>
-                            <form action="{{ url('sell')}}/{{$sell->id_sell}}" method="post">
+                            <form action="{{ url('sell')}}/{{$sell->id}}" method="post">
                               {{method_field('delete')}}
                               {{csrf_field()}}
                               <input class="btn btn-danger btn-sm" type="submit" name="submit" value="Cancel">

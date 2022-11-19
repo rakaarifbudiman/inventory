@@ -11,7 +11,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/', 'HomeController@index');
 //=========================================================================
 Route::group(['middleware'=>'auth'], function(){
-	Route::resource('employee', 'EmployeeController');
+	
 	Route::get('/employee/{id_karyawan}/show', 'EmployeeController@show');
 	//=========================================================================
 	Route::resource('product', 'ProductController');
@@ -45,6 +45,7 @@ Route::group(['middleware'=>'auth'], function(){
 	Route::post('/setting', 'UserSettingController@update');
 	//=========================================================================
 	Route::group(['middleware'=>'akses.admin'], function(){
+		Route::resource('employee', 'EmployeeController');
 		Route::resource('category', 'CategoryController');
 		Route::resource('unit', 'UnitController');
 		Route::resource('user', 'UserController');

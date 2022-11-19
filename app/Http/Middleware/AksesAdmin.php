@@ -2,8 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
 use Auth;
+use Closure;
+use Illuminate\Support\Str;
 
 class AksesAdmin
 {
@@ -16,7 +17,9 @@ class AksesAdmin
      */
     public function handle($request, Closure $next)
     {
-        if(Auth::user()->akses == 'admin'){
+        $contains = Str::containsAll(Auth::user()->role, ['ATK']);     
+
+        if(Auth::user()->akses == 'admin' && $contains==true){
             return $next($request);
         }
 
