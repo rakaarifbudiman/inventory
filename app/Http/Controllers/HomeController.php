@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Sell;
 use App\Models\User;
+use App\Models\Batch;
 use App\Models\Product;
 use App\Models\Employee;
 use App\Models\Purchase;
@@ -35,7 +36,7 @@ class HomeController extends Controller
                         ->orderBy('sells.id')
                         ->get();        
         $minstocks = Product::whereColumn('stok_produk','<','safety_stok')->get();       
-        
+        $minbatches = Batch::where('expired','<=',now())->where('stok','>',0)->where('status',1)->get(); 
         foreach($minstocks as $product){
             $cekpurchase = Purchase::
             select("id_produk", DB::raw("sum(qty_purchase) as total_purchase"))
@@ -57,10 +58,12 @@ class HomeController extends Controller
             return view('gudang.home',['sells'=>$sells,
             'minstocks'=>$minstocks,
             'cekstok'=>$cekstok,
+            'minbatches'=>$minbatches
             ]);
         }else{
             return view('gudang.home',['sells'=>$sells,
-        'minstocks'=>$minstocks,        
+            'minstocks'=>$minstocks,
+            'minbatches'=>$minbatches        
         ]);
         }
 

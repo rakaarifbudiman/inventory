@@ -41,6 +41,11 @@
                           <label>Satuan</label>
                           <!-- <input class="form-control" type="text" name="nama_unit"> -->
                           {!!Form::text('nama_unit', null, ['class'=>'form-control'])!!}
+                        </div>
+                        <div>
+                          <label>Desimal</label>
+                          <!-- <input class="form-control" type="text" name="nama_unit"> -->
+                          {!!Form::number('dec_unit', null, ['class'=>'form-control'])!!}
                         </div><br><br>
                         <div>
                           <input class="btn btn-primary" type="submit" name="submit" value="Tambahkan">
@@ -70,6 +75,7 @@
                     <tr style="background-color: rgb(230, 230, 230);">
                       <th>No</th>
                       <th>Satuan</th>
+                      <th>Desimal</th>
                       <th>Action</th>                 
                     </tr>
                   </thead>
@@ -78,6 +84,7 @@
                     <tr>
                       <td>{{ $no++ }}</td>
                       <td>{{ $unit->nama_unit }}</td>
+                      <td>{{ $unit->dec_unit }}</td>
                       <td>
                         <a href="{{ url('unit') }}/{{$unit->id}}/edit"><button class="btn btn-warning btn-xs">Edit</button></a>
                         <button class="btn btn-danger btn-xs" data-delid={{$unit->id}} data-toggle="modal" data-target="#delete"><i class="glyphicon glyphicon-trash"></i> Hapus</button>

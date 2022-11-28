@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\ProductConversion;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 
@@ -18,5 +19,10 @@ class Product extends Model implements Auditable
     public function units()
     {
         return $this->belongsTo('App\Models\Unit', 'id_unit');
+    }
+
+    public function conversions()
+    {
+        return $this->hasMany('App\Models\ProductConversion','id_produk');
     }
 }

@@ -3,6 +3,15 @@
 <head>
   @include('templates.head')
   <title>Barang Masuk</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" />
+	<script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.full.min.js"></script>	
+	<style>
+		.select2-selection__choice {
+  		color: blueviolet !important
+		}
+  
+	</style>
 </head>
 <body class="hold-transition skin-blue sidebar-mini" style="min-height: 400px;">
 <div class="wrapper">
@@ -56,18 +65,23 @@
                             </div>                           
 
                             <div class="row" style="margin-top: 10px;">
-                              <div class="col-xs-6">
+                              <div class="col-xs-6">                               
                                 <label>Nama Barang</label>
                                 <select class="form-control form-control-sm" name="id_produk" id="id_produk">
                                   <option>- Nama barang -</option>
-                                  @foreach($products as $product)
-                                  <option value="{{$product->id}}" data-id="{{$product->id}}">{{$product->nama_produk}} ({{$product->units->nama_unit}})</option>
+                                  @foreach ($roles as $role)                        
+                                      @foreach($products as $product)
+                                      <option value="{{$product->id}}" data-id="{{$product->id}}"
+                                        {{$role==$product->categories->nama_kategori ? '' : 'hidden'}}>
+                                        {{$product->nama_produk}} ({{$product->units->nama_unit}}) - {{$product->categories->nama_kategori}}
+                                      </option>
+                                      @endforeach
                                   @endforeach
                                 </select>
                               </div>
                               <div class="col-xs-6">
                                 <label>Jumlah</label>
-                                <input class="form-control" type="text" name="qty_purchase">
+                                <input class="form-control" type="number" name="qty_purchase" min=0 step=".001">
                               </div>
                             </div>                           
                             <div class="row" style="margin-top: 10px;padding-left: 15px;">
@@ -93,8 +107,8 @@
                           Pilih barang yang akan diambil.
                         </p>
                         <p>
-                          Stok = <span id="cekstok"></span>
-                        </p>
+                          <b>Stok = <span id="cekstok" class="text-success"></span></b> | Safety Stok = <span id="safetystok"></span> | Max Stok = <span id="maxstok"></span>                                                  
+                        </p>                        
                         <img id="img-profile"/>
                         <img>
                       </div>
@@ -134,17 +148,17 @@
                           <tr>
                             <td>
                               <a href="purchase/{{$purchase->id}}/show"><button class="btn btn-primary btn-xs">Detail</button></a>
-                              @if(Auth::user()->akses == 'admin')
+                              @can('edit',$purchase)
                                   <a href="purchase/{{$purchase->id}}/edit"><button class="btn btn-success btn-xs">Terima</button></a>
                                   <button class="btn btn-danger btn-xs" data-purchase={{$purchase->id}} data-toggle="modal" data-target="#delete-purchase"><i class="glyphicon glyphicon-trash"></i> Hapus</button>
-                              @endif
+                              @endcan
                             </td>   
                             <td>{{ $no++ }}</td>
                             <td>{{ Carbon\Carbon::parse($purchase->tgl_purchase)->format('d-M-y') }}</td>
                             <td>{{ $purchase->products->kode_produk }}</td>
                             <td>{{ $purchase->products->nama_produk }}</td>
                             <td>{{ $purchase->employees->name }}</td>
-                            <td><b>{{ $purchase->qty_purchase }}</b>   {{ $purchase->products->units->nama_unit }}</td>
+                            <td><b>{{ number_format($purchase->qty_purchase,$purchase->products->units->dec_unit, '.', ',')}}</b>   {{ $purchase->products->units->nama_unit }}</td>
                             <td>{{ $purchase->ket_purchase }}</td>   
                                              
                           </tr>
@@ -211,7 +225,8 @@
 </script>
 
 <script type="text/javascript">     
-  $(document).ready(function (e) {    
+  $(document).ready(function (e) {   
+    
      $('#id_produk').change(function(){  
       var idx = $(this).val();  
         $.ajaxSetup({
@@ -232,6 +247,8 @@
                    $('#img-profile').attr('src', srcimage)  
                       
                    document.getElementById('cekstok').innerText = data.stok_produk
+                   document.getElementById('safetystok').innerText = data.safety_stok
+                   document.getElementById('maxstok').innerText = data.max_stok
               },
               error: function (data) {
                  

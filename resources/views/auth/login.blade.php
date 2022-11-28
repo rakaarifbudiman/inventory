@@ -72,11 +72,11 @@
                                     </button>
                                 </div>
 
-                                {{-- <div class="text-center">
+                                <div class="text-center">
                                     <a class="btn btn-link" href="{{ route('password.request') }}">
                                         Forgot Your Password?
                                     </a>
-                                </div> --}}
+                                </div>
                             </div>
                         </form>
                     </div>

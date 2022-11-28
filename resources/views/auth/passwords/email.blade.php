@@ -28,10 +28,9 @@
                                 {{ session('status') }}
                             </div>
                         @endif
-
+                        @include('gudang/notification')
                         <form class="form-horizontal" method="POST" action="{{ route('password.email') }}">
                             {{ csrf_field() }}
-
                             <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                                 <label for="email" class="col-md-4 control-label">E-Mail Address</label>
 
@@ -49,7 +48,7 @@
                             <div class="form-group">
                                 <div class="col-md-9 col-md-offset-1">
                                     <button type="submit" class="btn btn-primary btn-block">
-                                        Send Password Reset Link
+                                        Send New Password
                                     </button>
                                 </div>
                             </div>

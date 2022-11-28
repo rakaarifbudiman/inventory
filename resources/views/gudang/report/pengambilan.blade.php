@@ -61,12 +61,12 @@
                 </form>
               </div>
 
-              <table id="example2" class="table table-bordered table-hover">
+              <table id="report_sell_table" class="table table-bordered table-hover">
                 <thead>
                   <?php $no=1; ?>
                   <tr style="background-color: rgb(230, 230, 230);">
                     @if(Auth::user()->akses !== 'admin')
-                      <th style="display: none;" class="none">Action</th>
+                      <th>Action</th>
                     @else
                       <th class="none">Action</th>
                     @endif
@@ -84,16 +84,16 @@
                 <tbody>
                   @foreach($sells as $sell)
                   <tr>
-                    @if(Auth::user()->akses == 'admin')                    
                     <td>
-                      <button class="btn btn-danger btn-xs" data-delsell={{$sell->id}} data-toggle="modal" data-target="#delete-sell"><i class="glyphicon glyphicon-trash"></i> Hapus</button> 
+                    @can('edit',$sell)             
+                      <button class="btn btn-danger btn-xs" data-delsell={{$sell->id}} data-toggle="modal" data-target="#delete-sell"><i class="glyphicon glyphicon-trash"></i> Hapus</button>                     
+                    @endcan
                     </td>
-                    @endif
                     <td>{{ $no++ }}</td>
                     <td>{{ Carbon\Carbon::parse($sell->tgl_sell)->format('d-M-y') }}</td>
                     <td>{{ $sell->products->kode_produk }}</td>
                     <td>{{ $sell->products->nama_produk }}</td>
-                    <td>{{ $sell->qty }}</td>
+                    <td>{{ number_format($sell->qty,$sell->products->units->dec_unit, '.', ',') }}</td>
                     <td>{{ $sell->products->units->nama_unit }}</td>
                     <td>{{ $sell->employees->name }}</td>
                     <td>{{ $sell->creators->name }}</td>
@@ -149,7 +149,7 @@
 <script>
   $(function () {
     $('#example1').DataTable()
-    $('#example2').DataTable({
+    $('#report_sell_table').DataTable({
       'paging'      : true,
       'lengthChange': true,
       'searching'   : true,

@@ -45,6 +45,7 @@ class UnitController extends Controller
         $units = new Unit;
         $units->id   = $request->id_unit;
         $units->nama_unit = $request->nama_unit;
+        $units->dec_unit = $request->dec_unit;
         $units->save();
         // dd('kesini');
 
@@ -89,6 +90,7 @@ class UnitController extends Controller
 
         $units = Unit::find($id_unit);
         $units->nama_unit = $request->nama_unit;
+        $units->dec_unit = $request->dec_unit;
         $units->save();
         return redirect('unit')->with('pesan', 'Data berhasil di update');
     }

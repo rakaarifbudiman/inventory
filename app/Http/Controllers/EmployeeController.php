@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Mail;
 use App\Models\User;
 use App\Models\Agama;
 use App\Http\Requests;
@@ -11,8 +12,10 @@ use App\Models\Employee;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Mail\Auth\UserActivation;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 
 class EmployeeController extends Controller
 {
@@ -57,18 +60,30 @@ class EmployeeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request){
-        //dd($request->all());
-      $employees = new User;      
-      $employees->username         = $request->username;
-      $employees->name = $request->name;
-      $employees->department   = $request->department;
-      $employees->email   = $request->email;
-      $employees->akses  = $request->akses;  
-      $employees->active   = 1;
-      $employees->password   = bcrypt('12345678');    
-      $employees->save();     
+    public function store(Request $request){        
+        //generate password           
+        $random = randomPassword();
+        $hashpassword = Hash::make($random);
+        $employees = new User;      
+        $employees->username         = $request->username;
+        $employees->name = $request->name;
+        $employees->department   = $request->department;
+        $employees->email   = $request->email;
+        $employees->akses  = $request->akses;  
+        $employees->active   = 1;
+        $employees->password   = $hashpassword;    
+        $employees->save();    
 
+            //Send Notif to User        
+            $mailData = [
+                'name' => $employees->name,
+                'username' => $employees->username,
+                'password' => $random,                        
+            ];    
+
+            $emailto = $request->email;         
+            Mail::to($emailto)            
+            ->send(new UserActivation($mailData));
       return redirect('employee')->with('pesan', 'Data berhasil ditambahkan');
   }
 
@@ -113,7 +128,12 @@ class EmployeeController extends Controller
         $employees = User::find($id);
         $employees->akses           = $request->akses;   
         $employees->active           = $request->active;   
-        $employees->role= collect($request->input('role'))->implode(';');         
+        if($employees->username=='admin'){
+            $employees->role= collect($request->input('role'))->implode(';').';All';
+            
+        }else{
+            $employees->role= collect($request->input('role'))->implode(';');
+        }           
         $employees->save();
         return redirect('employee')->with('pesan', 'Data berhasil di update');
     }

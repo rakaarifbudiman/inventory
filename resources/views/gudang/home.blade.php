@@ -20,9 +20,9 @@
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-      <h1>
+      {{-- <h1>
         Selamat datang di Sistem Stok R&D        
-      </h1>
+      </h1> --}}
     </section>
     @include('gudang/notification')
     @if ($sells->count()>0 && Auth()->user()->akses=='admin')
@@ -60,8 +60,11 @@
                             <form action="{{ url('sell')}}/{{$sell->id}}" method="post">
                               {{method_field('delete')}}
                               {{csrf_field()}}
-                              <input class="btn btn-danger btn-sm" type="submit" name="submit" value="Cancel">
-                              <a href="/sell/update/by/{{ $sell->id}}" class="btn btn-primary btn-sm">Selesai</a>
+                              @can('edit',$sell)
+                                <input class="btn btn-danger btn-sm" type="submit" name="submit" value="Cancel">
+                                <a href="/sell/update/by/{{ $sell->id}}" class="btn btn-primary btn-sm">Selesai</a>
+                              @endcan
+                              
                               {{csrf_field()}}
                               <input type="hidden" name="_method" value="DELETE">
                             </form>                            
@@ -72,7 +75,7 @@
                           <td>{{ $sell->products->nama_produk }}</td>
                           <td>{{ $sell->employees->name }}</td>
                           <td>{{ $sell->creators->name }}</td>
-                          <td><b>{{ $sell->qty }}</b>   {{ $sell->products->units->nama_unit }}</td>
+                          <td><b>{{ number_format($sell->qty,$sell->products->units->dec_unit, '.', ',') }}</b>   {{ $sell->products->units->nama_unit }}</td>
                           <td>{{ $sell->products->lokasi }}</td>
                           <td>{{ $sell->ket_sell }}</td>
         
@@ -84,9 +87,9 @@
                         </tr>
                       </tbody>
                     </table>
-                    <div style="margin-top: 20px">
+                    {{-- <div style="margin-top: 20px">
                       <a href="{{ route('sell.update') }}" class="btn btn-success"><i class="glyphicon glyphicon-circle-arrow-right"></i> Selesai</a>
-                    </div>                
+                    </div>  --}}               
               </div>
             <!-- /.box-body -->
     
@@ -125,19 +128,83 @@
                         <tbody>
                           @foreach($minstocks as $index=>$stok)
                             @if($cekstok[$index]<$stok->safety_stok)
-                              <tr>
-                                <td>                                                     
-                                    <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalbuy{{$stok->id}}">Masukkan Pembelian</a>                                                      
-                                </td>
+                              <tr>                                
+                                <td>    
+                                  @can('edit',$stok)                                                 
+                                    <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalbuy{{$stok->id}}"><i class="glyphicon glyphicon-shopping-cart"></i> Masukkan Pembelian</a>                                                      
+                                  @endcan
+                                </td>                        
+                                
                                 <td>{{ $no++ }}</td>                        
                                 <td>{{ $stok->kode_produk }}</td>
                                 <td>{{ $stok->nama_produk }}</td>                        
-                                <td><b>{{ $stok->stok_produk }}</b>   {{ $stok->units->nama_unit }}</td>
+                                <td><b>{{ number_format($stok->stok_produk,$stok->units->dec_unit, '.', ',') }}</b>   {{ $stok->units->nama_unit }}</td>
                                 <td>{{ $stok->lokasi }}</td>   
                                 <td>{{ $stok->max_stok - $cekstok[$index] }}</td>                   
                               </tr>
                               @include('gudang.buy.modal.home-buy')
                             @endif
+                          @endforeach
+                          <tr>
+                            
+                          </tr>
+                        </tbody>
+                      </table>                             
+                </div>
+              <!-- /.box-body -->
+      
+            </div>
+            <!-- /.box -->
+          </div>
+          <!-- /.col -->
+        </div>
+    <!-- End Suggest Barang Abis -->
+    @endif
+
+    @if (Auth()->user()->akses=='admin' && $minbatches->count()>0)
+    <!-- Suggest Barang ED -->
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="box" style="padding: 0 30px">
+                <div class="box-header">
+                  <h3 class="box-title">Barang yang Expired</h3>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">          
+                  
+                      <table id="example1" class="table table-bordered table-hover">
+                        <thead>
+                          <?php $no=1; ?>
+                          <tr style="background-color: rgb(230, 230, 230);">
+                            <th>Action</th>
+                            <th>No</th>                        
+                            <th>Kode Barang</th>
+                            <th>Nama Barang</th>                        
+                            <th>Stok</th>
+                            <th>Lokasi</th>  
+                            <th>No Batch</th>  
+                            <th>Expired</th>                                                                                        
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @foreach($minbatches as $index=>$batch)                            
+                              <tr>                                
+                                <td>    
+                                  @can('edit',$batch->products)                                                 
+                                    <a href="#" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modalsell{{$batch->id}}"><i class="glyphicon glyphicon-trash"></i> Musnahkan</a>                                                      
+                                  @endcan
+                                </td>                        
+                                
+                                <td>{{ $no++ }}</td>                        
+                                <td>{{ $batch->products->kode_produk }}</td>
+                                <td>{{ $batch->products->nama_produk }}</td>                        
+                                <td><b>{{ number_format($batch->stok,$batch->products->units->dec_unit, '.', ',') }}</b>   {{ $batch->products->units->nama_unit }}</td>
+                                <td>{{ $batch->products->lokasi }}</td>   
+                                <td>{{ $batch->no_batch }}</td>    
+                                <td>{{ $batch->expired ? Carbon\Carbon::parse($batch->expired)->format('d-M-y') : ''}}</td>                 
+                              </tr>
+                              @include('gudang.sell.modal.home-sell')
+                            
                           @endforeach
                           <tr>
                             

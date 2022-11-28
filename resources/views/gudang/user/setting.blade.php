@@ -17,13 +17,6 @@
 
   		<!-- Content Wrapper. Contains page content -->
 	  	<div class="content-wrapper">
-		    <!-- Content Header (Page header) -->
-		    <section class="content-header">
-		      <h1>
-		        Setting User
-		      </h1>
-		    </section>
-
 		    <section class="content">
 		      	<div class="row">
 		        	<div class="col-xs-12">
@@ -74,13 +67,14 @@
 											<label>Ulangi Password</label>
 											<input class="form-control" type="password" name="repassword">
 										</div><br><br>
-
-										<div>
-											<input class="btn btn-primary" type="submit" name="submit" value="Simpan">
-											<input type="reset" class="btn btn-danger" value="Reset">
-											{{csrf_field()}}
-											<!-- <input type="hidden" name="_method" value="PUT"> -->
-										</div>
+										@if(Auth::user()->iccs != 1 || Auth::user()->akses == 'admin')
+											<div>											
+												<input class="btn btn-primary" type="submit" name="submit" value="Simpan">
+												<input type="reset" class="btn btn-danger" value="Reset">
+												{{csrf_field()}}
+												<!-- <input type="hidden" name="_method" value="PUT"> -->
+											</div>
+										@endif
 					            	</form>
 
 					            </div>

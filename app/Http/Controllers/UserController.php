@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\User;
 use Auth;
+use Mail;
+use App\Models\User;
+use Illuminate\Http\Request;
+use App\Mail\Auth\ResetPassword;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -66,10 +70,6 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -103,16 +103,16 @@ class UserController extends Controller
             'repassword' => 'same:password',
             'akses' => 'required',
         ])->validate();
-
-        $users = User::find($id);
+        $users = User::find($id);           
+        
         $users->name         = $request->name;
         $users->username = $request->username;
         $users->email   = $request->email;
         $users->akses   = $request->akses;
         $users->active   = $request->active;
-        $users->password  = bcrypt($request->password);
+        $users->password  = HASH::make($request->password);
         $users->save();
-        return redirect('user')->with('pesan', 'Data berhasil di update');
+        return back()->with('pesan', 'Data berhasil di update');
 
         // if(!empty($request->password)){
         //     $field = [

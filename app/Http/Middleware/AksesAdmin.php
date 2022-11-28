@@ -17,7 +17,7 @@ class AksesAdmin
      */
     public function handle($request, Closure $next)
     {
-        $contains = Str::containsAll(Auth::user()->role, ['ATK']);     
+        $contains = Str::containsAll(Auth::user()->role, ['All']);     
 
         if(Auth::user()->akses == 'admin' && $contains==true){
             return $next($request);

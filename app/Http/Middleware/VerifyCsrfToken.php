@@ -12,6 +12,7 @@ class VerifyCsrfToken extends BaseVerifier
      * @var array
      */
     protected $except = [
-        '/product/get/image/url'
+        /* '/product/get/image/url',
+        '/product/get/newnumber' */
     ];
 }

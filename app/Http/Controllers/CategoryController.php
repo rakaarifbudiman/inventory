@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-
 use App\Http\Requests;
 use App\Models\Category;
+
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 
 class CategoryController extends Controller
 {
@@ -40,15 +42,18 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
+            'kode_kategori' => 'required',
             'nama_kategori' => 'required',
         ]);
-
         $categories = new Category;
         $categories->id   = $request->id_kategori;
+        $categories->kode_kategori = Str::upper($request->kode_kategori);
         $categories->nama_kategori = $request->nama_kategori;
         $categories->save();
-        // dd('kesini');
 
+        $categories->order = $categories->id;
+        $categories->save();
+        
         return redirect('category')->with('pesan', 'Data berhasil ditambahkan');
     }
 
@@ -85,10 +90,12 @@ class CategoryController extends Controller
     public function update(Request $request, $id_kategori)
     {
         $this->validate($request, [
+            'kode_kategori' => 'required',
             'nama_kategori' => 'required',
         ]);
 
         $categories = Category::find($id_kategori);
+        $categories->kode_kategori = Str::upper($request->kode_kategori);
         $categories->nama_kategori = $request->nama_kategori;
         $categories->save();
         return redirect('category')->with('pesan', 'Data berhasil di update');

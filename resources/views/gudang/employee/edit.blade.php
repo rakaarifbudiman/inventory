@@ -27,10 +27,7 @@
   		<!-- Content Wrapper. Contains page content -->
 	  	<div class="content-wrapper">
 		    <!-- Content Header (Page header) -->
-		    <section class="content-header">
-		      <h1>
-		        Data Pasien
-		      </h1>
+		    <section class="content-header">		     
 
 		    <section class="content">
 		      	<div class="row">
@@ -64,11 +61,15 @@
 											<option value=0>Tidak</option>												
 										</select>										
 									</div><br>
-									@if ($employees->akses=='admin')
-									<div class="form-group">
+									<div {{\Illuminate\Support\Str::containsAll(Auth::user()->role, ['All'])==true ? 'hidden' : ''}}>
+										<label>Role</label>
+										<input class="form-control" type="text" name="name" value="{{ $employees->role }}" readonly>
+									</div>
+									@if (Auth::user()->akses=='admin' && \Illuminate\Support\Str::containsAll(Auth::user()->role, ['All'])==true)
+									<div class="form-group" {{\Illuminate\Support\Str::containsAll(Auth::user()->role, ['All'])==true ? '' : 'hidden'}}>
 										<label for="role">Role</label>
 										<select class="select2-multiple form-control" name="role[]" multiple="multiple"
-										  id="role">
+										  id="role" >
 										  @foreach($categories as $category)
                                             <option value="{{$category->nama_kategori}}"
                                               @foreach ($roles as $role)
@@ -85,7 +86,7 @@
 									
 									<div>
 										<input class="btn btn-primary" type="submit" name="submit" value="Simpan">
-										<input type="reset" class="btn btn-danger" value="Reset">
+										<a href="{{ url('/employee') }}" class="btn btn-success"><i class="#"></i> Kembali</a>
 										{{csrf_field()}}
 										<input type="hidden" name="_method" value="PUT">
 									</div>

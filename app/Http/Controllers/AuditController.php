@@ -6,9 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 use App\Http\Requests;
-use App\Models\Agama;
+use App\Models\Audit;
 
-class AgamaController extends Controller
+class AuditController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,8 +17,8 @@ class AgamaController extends Controller
      */
     public function index(){
 
-        $agamas = Agama::all(); 
-        return view('gudang.agama.index', ['agamas'=>$agamas]);
+        $audits = Audit::orderBy('created_at','DESC')->get();        
+        return view('gudang.audit.index', ['audits'=>$audits]);
     }
 
     /**
@@ -42,13 +42,13 @@ class AgamaController extends Controller
             'nama_agama' => 'required',
         ]);
 
-        $agamas = new Agama;
+        $agamas = new Audit;
         $agamas->id_agama   = $request->id_agama;
         $agamas->nama_agama = $request->nama_agama;
         $agamas->save();
         // dd('kesini');
 
-        return redirect('agama')->with('pesan', 'Data berhasil ditambahkan');
+        return redirect('audit')->with('pesan', 'Data berhasil ditambahkan');
     }
 
     /**
@@ -70,8 +70,8 @@ class AgamaController extends Controller
      */
     public function edit($id_agama){
         
-        $agamas = Agama::find($id_agama);
-        return view('gudang/agama/edit', compact('agamas'));
+        $agamas = Audit::find($id_agama);
+        return view('gudang/audit/edit', compact('agamas'));
     }
 
     /**
@@ -87,10 +87,10 @@ class AgamaController extends Controller
             'nama_agama' => 'required',
         ]);
 
-        $agamas = Agama::find($id_agama);
+        $agamas = Audit::find($id_agama);
         $agamas->nama_agama = $request->nama_agama;
         $agamas->save();
-        return redirect('agama')->with('pesan', 'Data berhasil di update');
+        return redirect('audit')->with('pesan', 'Data berhasil di update');
     }
 
     /**
@@ -102,7 +102,7 @@ class AgamaController extends Controller
     public function destroy(Request $request){
         
         // dd($request->id_agama);
-        $agamas = Agama::find($request->id_agama);
+        $agamas = Audit::find($request->id_agama);
         $agamas->delete();
         return back()->with('pesan', 'Data berhasil dihapus');
     }

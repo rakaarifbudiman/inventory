@@ -12,16 +12,14 @@
         <a href="{{ url('/home') }}">
           <i class="fa fa-dashboard"></i> <span>Dashboard</span>
         </a>
-      </li>
-      @if(auth()->user()->akses=='admin')
+      </li>      
         <li>
           <a href="{{ route('employee.index') }}">
             <i class="fa fa-address-book"></i> <span> Data Karyawan</span>
             <span class="pull-right-container">
             </span>
           </a>
-        </li>
-      @endif      
+        </li>      
       <li>
         <a href="{{ route('product.index') }}">
           <i class="glyphicon glyphicon-shopping-cart"></i> <span>Data Barang</span>

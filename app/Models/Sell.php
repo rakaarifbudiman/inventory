@@ -24,4 +24,9 @@ class Sell extends Model implements Auditable
 
         return $this->belongsTo('App\Models\Product', 'id_produk');
     }
+
+    public function batches(){
+        return $this->belongsTo('App\Models\Batch', 'id_batch');
+    }
+    
 }

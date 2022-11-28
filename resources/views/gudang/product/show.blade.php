@@ -38,9 +38,8 @@
                         <div class="box-header">
                           <h3 class="box-title">Detail data produk</h3>
                         </div>                        
-                          <p class="card-text"><b>{{ $products->kode_produk }} : {{ $products->nama_produk }}</b><br>
-                            <b>Kategori</b> : {{ $products->categories->nama_kategori }}<br>
-                            <b>Stok</b> : <span class="bg-success"> {{ $products->stok_produk }} {{ $products->units->nama_unit }}</span><br>
+                          <p class="card-text "><b>{{ $products->kode_produk }} : {{ $products->nama_produk }}</b><br>
+                            <b>Kategori</b> : {{ $products->categories->nama_kategori }}<br>                            
                             <b>Safety Stok</b> : {{ $products->safety_stok }}<br>
                             <b>Max Stok</b> : {{ $products->max_stok }}<br>
                               <b>Lokasi</b> : {{ $products->lokasi }}<br>
@@ -51,6 +50,13 @@
                           </div><br>
                       </div>
                       <div class="col-lg-8">
+                        <b><h2 class="text-aqua"> Stok : {{ number_format($products->stok_produk,$products->units->dec_unit, '.', ',') }} {{ $products->units->nama_unit }}
+                        {{-- @forelse ($products->conversions as $conversion)
+                            ~ {{$products->stok_produk * $conversion->nilai_konversi}} {{ $conversion->to_units->nama_unit}}
+                        @empty
+                            
+                        @endforelse --}}
+                        </h2></b>
                         <img class="card-img-top" src="{{asset('image/'.$products->image)}}" style="width: 200px;height: 200px;">
                       </div>
                   </div>
@@ -64,34 +70,81 @@
         <!-- /.col -->
       </div>
       <!-- /.row -->
+      @if($batches->count()>0)
+        <!-- Main content Data Batch-->
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="box">
+              <div class="box-header">
+                <h3 class="box-title">Data Stok Batch</h3>
+              </div>
+              <!-- /.box-header -->
+              <div class="box-body">             
+                <table id="example1" class="table table-bordered table-hover">
+                  <thead>
+                    <?php $no=1; ?>
+                    <tr style="background-color: rgb(230, 230, 230);">
+                      <th>No</th>
+                      <th>No Batch</th>
+                      <th>Expired</th>                      
+                      <th>Stok</th>
+                      <th>Satuan</th>   
+                      <th>Keterangan Batch</th>                
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @foreach($batches as $batch)
+                    <tr>
+                      <td>{{ $no++ }}</td>                      
+                      <td>{{ $batch->no_batch }}</td>
+                      <td>{{ $batch->expired ? Carbon\Carbon::parse($batch->expired)->format('d-M-y') : '' }}</td>                      
+                      <td>{{ number_format($batch->stok,$batch->products->units->dec_unit, '.', ',') }}</td>      
+                      <td>{{ $batch->products->units->nama_unit }}</td>    
+                      <td>{{ $batch->ket_batch }}</td>                                  
+                    </tr>
+                    @endforeach  
+                  </tbody>
+
+                </table>
+
+              </div>
+              <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+          </div>
+          <!-- /.col -->      
+        </div>
+          <!-- /.content Data Batch-->
+      @endif 
       <!-- Main content Stok Masuk-->
       <div class="row">
         <div class="col-xs-12">
           <div class="box">
             <div class="box-header">
               <h3 class="box-title">Laporan barang masuk</h3>
+              <span><form class="form-inline" action="#" method="get">
+                <div class="form-group">
+                  Dari Tanggal :
+                  <input type="date" name="tgl_awal" class="form-control input-sm"> 
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  Sampai Tanggal :
+                  <input type="date" name="tgl_akhir" class="form-control input-sm">
+                </div>
+                <div class="form-group">
+                  <button type="submit" class="btn btn-primary btn-sm" name="cari">Filter</button>
+                  <button type="submit" class="btn btn-danger btn-sm" name="reset">Reset</button>                    
+                </div>
+              </form></span>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
               @include('gudang/notification')
 
               <div style="margin-bottom: 10px;" class="print mb-4 none">
-                <form class="form-inline" action="#" method="get">
-                  <div class="form-group">
-                    Dari Tanggal :
-                    <input type="date" name="tgl_awal" class="form-control input-sm"> 
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    Sampai Tanggal :
-                    <input type="date" name="tgl_akhir" class="form-control input-sm">
-                  </div>
-                  <div class="form-group">
-                    <button type="submit" class="btn btn-primary btn-sm" name="cari">Filter</button>
-                    <button type="submit" class="btn btn-danger btn-sm" name="reset">Reset</button>                    
-                  </div>
-                </form>
+                
               </div>
 
-              <table id="example2" class="table table-bordered table-hover">
+              <table id="example2" class="table datatable table-bordered table-hover">
                 <thead>
                   <?php $no=1; ?>
                   <tr style="background-color: rgb(230, 230, 230);">
@@ -104,11 +157,13 @@
                     <th>Dipesan oleh</th>
                     <th>Dibuat oleh</th>
                     <th>Keterangan Pemesanan</th>
-                    @if(Auth::user()->akses !== 'admin')
+                    <th>No Batch</th>
+                    <th>Expired</th>
+                    {{-- @if(Auth::user()->akses !== 'admin')
                       <th style="display: none;" class="none">Action</th>
                     @else
                       <th class="none">Action</th>
-                    @endif
+                    @endif --}}
                   </tr>
                 </thead>
                 <tbody>
@@ -118,12 +173,14 @@
                     <td>{{ Carbon\Carbon::parse($purchase->tgl_purchase)->format('d-M-y') }}</td>
                     <td>{{ $purchase->products->kode_produk }}</td>
                     <td>{{ $purchase->products->nama_produk }}</td>
-                    <td>{{ $purchase->qty_purchase }}</td>
+                    <td>{{ number_format($purchase->qty_purchase,$purchase->products->units->dec_unit, '.', ',') }}</td>
                     <td>{{ $purchase->products->units->nama_unit }}</td>
                     <td>{{ $purchase->employees->name }}</td>
                     <td>{{ $purchase->creators->name }}</td>
                     <td>{{ $purchase->ket_purchase }}</td>
-                    @if(Auth::user()->akses !== 'admin')
+                    <td>{{ $purchase->batches ? $purchase->batches->no_batch : '' }}</td>
+                    <td>{{ $purchase->batches ? ($purchase->batches->expired!=null ? Carbon\Carbon::parse($purchase->batches->expired)->format('d-M-y') :'') : '' }}</td>
+                    {{-- @if(Auth::user()->akses !== 'admin')
                     <td style="display: none;" class="none">
                       <button style="display: none;" class="btn btn-danger btn-xs" data-delid={{$purchase->id_purchase}} data-toggle="modal" data-target="#delete"><i class="glyphicon glyphicon-trash"></i> Hapus</button> 
           					</td>
@@ -131,12 +188,12 @@
                     <td class="none">
                       <button class="btn btn-danger btn-xs" data-delid={{$purchase->id_purchase}} data-toggle="modal" data-target="#delete"><i class="glyphicon glyphicon-trash"></i> Hapus</button> 
                     </td>
-                    @endif
+                    @endif --}}
                   </tr>
-                  @endforeach  
-                </tbody>
-
+                  @endforeach                  
+                </tbody>                               
               </table>
+              <b>Total Masuk = {{$total_purchase==null ? 0 : number_format($total_purchase->total,$products->units->dec_unit, '.', ',')}} {{$total_purchase==null ? $products->units->nama_unit : $total_purchase->products->units->nama_unit}}</b>
 
             </div>
             <!-- /.box-body -->
@@ -154,7 +211,7 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <table id="example2" class="table table-bordered table-hover">
+              <table id="example3" class="table datatable">
                 <thead>
                   <?php $no=1; ?>
                   <tr style="background-color: rgb(230, 230, 230);">
@@ -167,11 +224,12 @@
                     <th>Diambil oleh</th>
                     <th>Dibuat oleh</th>
                     <th>Keterangan Ambil</th>
-                    @if(Auth::user()->akses !== 'admin')
+                    <th>No Batch</th>
+                    {{-- @if(Auth::user()->akses !== 'admin')
                       <th style="display: none;" class="none">Action</th>
                     @else
                       <th class="none">Action</th>
-                    @endif
+                    @endif --}}
                   </tr>
                 </thead>
                 <tbody>
@@ -181,12 +239,13 @@
                     <td>{{ Carbon\Carbon::parse($sell->tgl_sell)->format('d-M-y') }}</td>
                     <td>{{ $sell->products->kode_produk }}</td>
                     <td>{{ $sell->products->nama_produk }}</td>
-                    <td>{{ $sell->qty }}</td>
+                    <td>{{ number_format($sell->qty,$sell->products->units->dec_unit, '.', ',') }}</td>
                     <td>{{ $sell->products->units->nama_unit }}</td>
                     <td>{{ $sell->employees->name }}</td>
                     <td>{{ $sell->creators->name }}</td>
                     <td>{{ $sell->ket_sell }}</td>
-                    @if(Auth::user()->akses !== 'admin')
+                    <td>{{ $sell->batches ? $sell->batches->no_batch : ''}}</td>
+                    {{-- @if(Auth::user()->akses !== 'admin')
                     <td style="display: none;" class="none">
                       <button style="display: none;" class="btn btn-danger btn-xs" data-delid={{$sell->id_sell}} data-toggle="modal" data-target="#delete"><i class="glyphicon glyphicon-trash"></i> Hapus</button> 
           					</td>
@@ -194,13 +253,13 @@
                     <td class="none">
                       <button class="btn btn-danger btn-xs" data-delid={{$sell->id_sell}} data-toggle="modal" data-target="#delete"><i class="glyphicon glyphicon-trash"></i> Hapus</button> 
                     </td>
-                    @endif
+                    @endif --}}
                   </tr>
                   @endforeach  
                 </tbody>
 
               </table>
-
+              <b>Total Keluar = {{$total_sell==null ? 0 : number_format($total_sell->total,$products->units->dec_unit, '.', ',')}} {{$total_sell==null ? $products->units->nama_unit : $total_sell->products->units->nama_unit}}</b>
             </div>
             <!-- /.box-body -->
           </div>
@@ -242,5 +301,22 @@
 <!-- AdminLTE for demo purposes -->
 <script src="{{ url('assets/dist/js/demo.js') }}"></script>
 <!-- page script -->
+<script>
+  $(function () {
+    $('#example1').DataTable()
+    $('#example2').DataTable()
+    $('#example3').DataTable()
+    $('#report_sell_table').DataTable({
+      'paging'      : true,
+      'lengthChange': true,
+      'searching'   : true,
+      'ordering'    : true,
+      'info'        : true,
+      'autoWidth'   : true
+    })
+  })
+
+  
+</script>
 </body>
 </html>

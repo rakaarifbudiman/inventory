@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\User;
 use Auth;
+use App\Models\User;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
 class UserSettingController extends Controller
 {
@@ -23,13 +26,17 @@ class UserSettingController extends Controller
     		'password' => 'nullable|min:8',
     		'repassword' => 'same:password'
     	])->validate();
-
+		
+		if(Auth::user()->iccs==1){
+            return redirect('/')->with('error','User ICCS tidak bisa reset password disini');
+        }
+		
     	if(!empty($request->password)){
     		$field = [
     			'name' => $request->name,
     			'username' => $request->username,
     			'email' => $request->email,
-    			'password' => bcrypt($request->password),
+    			'password' => HASH::make($request->password),
     		];
     	}
     	else{

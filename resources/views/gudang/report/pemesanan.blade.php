@@ -65,7 +65,7 @@
                   <?php $no=1; ?>
                   <tr style="background-color: rgb(230, 230, 230);">
                     @if(Auth::user()->akses !== 'admin')
-                      <th style="display: none;" class="none">Action</th>
+                      <th class="none">Action</th>
                     @else
                       <th class="none">Action</th>
                     @endif
@@ -84,16 +84,17 @@
                 <tbody>
                   @foreach($purchases as $purchase)
                   <tr>
-                    @if(Auth::user()->akses == 'admin')
-                    <td>                      
-                      <button class="btn btn-danger btn-xs" data-purchase={{$purchase->id}} data-toggle="modal" data-target="#delete-purchase"><i class="glyphicon glyphicon-trash"></i> Hapus</button>
-          					</td>                    
-                    @endif
+                    <td> 
+                    @can('edit',$purchase)                              
+                      <a href="purchase/{{$purchase->id}}/edit"><button class="btn btn-warning btn-xs">Edit</button></a>           
+                      <button class="btn btn-danger btn-xs" data-purchase={{$purchase->id}} data-toggle="modal" data-target="#delete-purchase"><i class="glyphicon glyphicon-trash"></i> Hapus</button>          					                   
+                    @endcan
+                    </td> 
                     <td>{{ $no++ }}</td>
                     <td>{{ Carbon\Carbon::parse($purchase->tgl_purchase)->format('d-M-y') }}</td>
                     <td>{{ $purchase->products->kode_produk }}</td>
                     <td>{{ $purchase->products->nama_produk }}</td>
-                    <td>{{ $purchase->qty_purchase }}</td>
+                    <td>{{ number_format($purchase->qty_purchase,$purchase->products->units->dec_unit, '.', ',') }}</td>
                     <td>{{ $purchase->products->units->nama_unit }}</td>
                     <td>{{ $purchase->employees->name }}</td>
                     <td>{{ $purchase->creators->name }}</td>

@@ -1,8 +1,11 @@
 <?php
 
-namespace App\Policies\ATK;
+namespace App\Policies;
 
 use App\Models\User;
+use App\Models\Product;
+use App\Models\Category;
+use Illuminate\Support\Str;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ProductPolicy
@@ -21,5 +24,10 @@ class ProductPolicy
     public function create(User $user, Product $product)
     {
         return $user->akses === 'admin';
+    }
+
+    public function edit(User $user, Product $product)
+    {            
+        return $user->akses == 'admin' && Str::containsAll($user->role, [$product->categories->nama_kategori]);       
     }
 }

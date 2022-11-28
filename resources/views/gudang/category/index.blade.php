@@ -38,8 +38,11 @@
                       @include('gudang/validation')
                       <form action="{{ url('/category') }}" method="post">
                         <div>
-                          <label>Kategori</label>
-                          <!-- <input class="form-control" type="text" name="nama_kategori"> -->
+                          <label>Kode Kategori</label>                          
+                          {!!Form::text('kode_kategori', null, ['class'=>'form-control','maxlength'=>'3'])!!}
+                        </div>
+                        <div>
+                          <label>Kategori</label>                          
                           {!!Form::text('nama_kategori', null, ['class'=>'form-control'])!!}
                         </div><br><br>
                         <div>
@@ -69,6 +72,7 @@
                     <?php $no=1; ?>
                     <tr style="background-color: rgb(230, 230, 230);">
                       <th>No</th>
+                      <th>Kode</th>
                       <th>Kategori</th>
                       <th>Action</th>                 
                     </tr>
@@ -77,10 +81,11 @@
                     @foreach($categories as $categories)
                     <tr>
                       <td>{{ $no++ }}</td>
+                      <td>{{ $categories->kode_kategori }}</td>
                       <td>{{ $categories->nama_kategori }}</td>
                       <td>
                         <a href="{{ url('category') }}/{{$categories->id}}/edit"><button class="btn btn-warning btn-xs">Edit</button></a>
-                        <button class="btn btn-danger btn-xs" data-delid={{$categories->id}} data-toggle="modal" data-target="#delete"><i class="glyphicon glyphicon-trash"></i> Hapus</button>
+                        {{-- <button class="btn btn-danger btn-xs" data-delid={{$categories->id}} data-toggle="modal" data-target="#delete"><i class="glyphicon glyphicon-trash"></i> Hapus</button> --}}
                       </td>
                     </tr>
                     @endforeach

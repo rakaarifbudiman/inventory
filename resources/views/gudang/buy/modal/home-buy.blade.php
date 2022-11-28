@@ -13,7 +13,7 @@
           <div class="modal-body" style="background-color: rgb(230, 230, 230)">            
             <div class="row mb-3">                        
                 <div class="col-sm-12">                    
-                    <input class="form-control form-control-sm text-center" type="number" id="qty_purchase" name="qty_purchase" value="{{ $stok->max_stok - $cekstok[$index] }}">                                                 
+                    <input class="form-control form-control-sm text-center" type="number" id="qty_purchase" name="qty_purchase" value="{{ $stok->max_stok - $cekstok[$index] }}" min=0 step=".001">                                                 
                 </div>                                 
             </div>               
             <input class="form-control form-control-sm" type="hidden" name="tgl_purchase" value="{{Carbon\Carbon::parse(now())->format('Y-m-d')}}">

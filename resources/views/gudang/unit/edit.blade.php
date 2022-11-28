@@ -37,6 +37,10 @@
 					            		<div>
 											<label>Satuan</label>
 											<input class="form-control" type="text" name="nama_unit" value="{{ $units->nama_unit }}">
+										</div>
+										<div>
+											<label>Desimal</label>
+											<input class="form-control" type="text" name="dec_unit" value="{{ $units->dec_unit }}">
 										</div><br><br>								
 										<div>
 											<input class="btn btn-primary" type="submit" name="submit" value="Simpan">

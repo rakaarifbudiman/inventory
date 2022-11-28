@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Auth;
+use File;
+use App\Models\Sell;
+use App\Models\Unit;
+use App\Models\Batch;
 use App\Http\Requests;
 use App\Models\Product;
-use App\Models\Purchase;
-use App\Models\Sell;
 use App\Models\Category;
-use App\Models\Unit;
-use File;
+use App\Models\Purchase;
+use Illuminate\Http\Request;
+use App\Models\ProductConversion;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -22,9 +25,8 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        
-        $products = Product::orderBy('kode_produk', 'DESC')->get(); 
+    {        
+        $products = Product::orderBy('id_kategori', 'ASC')->orderBy('kode_produk', 'ASC')->get(); 
         
         return view('gudang.product.index', ['products'=>$products]);
     }
@@ -42,8 +44,8 @@ class ProductController extends Controller
         $product = Product::all();       
         $categories = Category::all();
         $units = Unit::all();
-
-        return view('gudang.product.create', compact('categories', 'units'));
+        $roles = explode(';',Auth::user()->role);         
+        return view('gudang.product.create', compact('categories', 'units','roles'));
     }
 
     /**
@@ -62,6 +64,7 @@ class ProductController extends Controller
 
       $this->validate($request, [
           'image' => 'required|image|mimes:jpg,jpeg,png,JPG,JPEG,PNG|max:2000',
+          'id_kategori'=>'required|numeric'
       ]);
 
       $products = new Product;
@@ -76,6 +79,7 @@ class ProductController extends Controller
       $products->lokasi      = $request->lokasi;
       $products->ket_produk  = $request->ket_produk;
       $products->id_supplier  = 1;
+      $products->expired  = $request->expired;
 
       if($request->hasFile('image')){
         $file = $request->file('image');
@@ -99,8 +103,8 @@ class ProductController extends Controller
      */
     public function show($id_produk,Request $request)
     {
-        $products = Product::findOrFail($id_produk);
-
+        $products = Product::findOrFail($id_produk);        
+        
         if(isset($_GET['cari'])){
             // dd('disini');
             $tgl_awal = $request->tgl_awal;
@@ -116,9 +120,22 @@ class ProductController extends Controller
                 ->where('id_produk', $id_produk)
                 ->whereBetween('purchases.tgl_purchase', [$tgl_awal, $tgl_akhir])
                 ->orderBy('purchases.id', 'DESC')
+                ->get();   
+
+            $batches = Batch::where('status', '1')
+                ->where('id_produk', $id_produk)                
+                ->orderBy('expired', 'ASC')
+                ->orderBy('stok', 'ASC')
                 ->get();    
     
-
+            $total_purchase = Purchase::select('id_produk', DB::raw('SUM(qty_purchase) as total'))
+                ->whereBetween('purchases.tgl_purchase', [$tgl_awal, $tgl_akhir])
+                ->where('id_produk', $id_produk)
+                ->groupBy('id_produk')->first();
+            $total_sell = Sell::select('id_produk', DB::raw('SUM(qty) as total'))
+                ->whereBetween('sells.tgl_sell', [$tgl_awal, $tgl_akhir])
+                ->where('id_produk', $id_produk)
+                ->groupBy('id_produk')->first();
             if(empty($tgl_awal) || empty($tgl_akhir)){               
                 return back()->with('pesan', 'Masukkan tanggal!');
             }
@@ -126,7 +143,10 @@ class ProductController extends Controller
             return view('gudang.product.show', [
                 'products' => $products,
                 'sells' => $sells,
-                'purchases'=>$purchases]);
+                'purchases'=>$purchases,
+                'batches'=>$batches,
+                'total_purchase'=>$total_purchase,
+                'total_sell'=>$total_sell]);
 
         }
 
@@ -139,12 +159,22 @@ class ProductController extends Controller
             $purchases = Purchase::where('status', '1')
                 ->where('id_produk', $id_produk)
                 ->orderBy('purchases.id', 'DESC')
-                ->get();    
+                ->get();  
 
+            $batches = Batch::where('status', '1')
+                ->where('id_produk', $id_produk)                
+                ->orderBy('expired', 'ASC')
+                ->orderBy('stok', 'ASC')
+                ->get();      
+            $total_purchase = Purchase::select('id_produk', DB::raw('SUM(qty_purchase) as total'))->where('id_produk', $id_produk)->groupBy('id_produk')->first();
+            $total_sell = Sell::select('id_produk', DB::raw('SUM(qty) as total'))->where('id_produk', $id_produk)->groupBy('id_produk')->first();
             return view('gudang.product.show', [
-                'products' => $products,
-                'sells' => $sells,
-                'purchases'=>$purchases]);
+            'products' => $products,
+            'sells' => $sells,
+            'purchases'=>$purchases,
+            'batches'=>$batches,
+            'total_purchase'=>$total_purchase,
+            'total_sell'=>$total_sell]);
         }
 
         $sells = Sell::where('status', '1')
@@ -155,12 +185,22 @@ class ProductController extends Controller
         $purchases = Purchase::where('status', '1')
                 ->where('id_produk', $id_produk)
                 ->orderBy('purchases.id', 'DESC')
-                ->get();               
+                ->get();   
+        $total_purchase = Purchase::select('id_produk', DB::raw('SUM(qty_purchase) as total'))->where('id_produk', $id_produk)->groupBy('id_produk')->first();
+        $total_sell = Sell::select('id_produk', DB::raw('SUM(qty) as total'))->where('id_produk', $id_produk)->groupBy('id_produk')->first();
+        $batches = Batch::where('status', '1')
+                ->where('id_produk', $id_produk)                
+                ->orderBy('expired', 'ASC')
+                ->orderBy('stok', 'ASC')
+                ->get();             
 
         return view('gudang.product.show', [
             'products' => $products,
             'sells' => $sells,
-            'purchases'=>$purchases]);
+            'purchases'=>$purchases,
+            'batches'=>$batches,
+            'total_purchase'=>$total_purchase,
+            'total_sell'=>$total_sell]);
     }
 
     /**
@@ -203,9 +243,10 @@ class ProductController extends Controller
         $products->nama_produk = $request->nama_produk;
         $products->id_kategori = $request->id_kategori;
         $products->stok_produk = $request->stok_produk;
-        $products->id_unit     = $request->id_unit;
+        /* $products->id_unit     = $request->id_unit; */
         $products->lokasi      = $request->lokasi;
         $products->ket_produk  = $request->ket_produk;
+        $products->expired  = $request->expired;
 
         if($request->hasFile('image')){
             $file = $request->file('image');
@@ -269,7 +310,25 @@ class ProductController extends Controller
 
     public function getimageurl(Request $request)
     {        
-        $data = Product::where('id',$request->idx)->first(); 
+        $data = Product::join('units','products.id_unit', '=', 'units.id')->where('products.id',$request->idx)->first(); 
+        //$unit=$data->units->nama_unit;
+        return response()->json($data);        
+    }
+
+    public function getnewnumber(Request $request)
+    {
+        $lastid = Product::where('id_kategori',$request->idx)
+        ->max('kode_produk');
+        $lastno = intval(substr($lastid,-3));  
+        $category = Category::find($request->idx); 
+             
+        $data = $category->kode_kategori. sprintf("%03s", ($lastno==0 or $lastno==NULL) ? 1 : abs($lastno+1));    
+        return response()->json($data);  
+    }
+
+    public function getcategory(Request $request)
+    {        
+        $data = Product::where('id_kategori',$request->idx)->get();        
         return response()->json($data);        
     }
 }

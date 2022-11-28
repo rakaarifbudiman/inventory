@@ -2,7 +2,19 @@
 <html>
 <head>
 	@include('templates.head')
-  <title>Halaman Karyawan</title>
+    <title>Halaman Karyawan</title>
+
+  <style type="text/css">
+    .box-body img{
+      width: 50px;
+    }
+
+    @media print{
+      .none{
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -19,62 +31,61 @@
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-      <h1>
-        Data Karyawan
-      </h1>
+        <h1>
+          Data Karyawan
+        </h1>
     </section>
 
     <!-- Main content -->
     <section class="content">
       <div class="row">
         <div class="col-xs-12">
-          <div class="box">
-            <div class="box-header">
-              <h3 class="box-title">Data Karyawan</h3>
-            </div>
+          <div class="box">            
             <!-- /.box-header -->
             <div class="box-body">
               @include('gudang/notification')
-              <div>
-								@if(Auth::user()->akses == 'admin')
-                <a href="{{ route('employee.create') }}"> <button class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-plus"></i> Tambah Karyawan</button></a>
-								@endif
-              </div><br>
-              <table id="example1" class="table table-bordered table-hover">
+                <div>
+                    @if(Auth::user()->akses == 'admin')
+                        <a href="{{ route('employee.create') }}"> <button class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-plus"></i> Tambah Karyawan</button></a>
+                    @endif
+                </div><br>              
+              <table id="karyawan_table" class="table table-bordered table-hover">
                 <thead>
-                  <?php $no=1; ?>
-                  <tr style="background-color: rgb(230, 230, 230);">
-                    <th>No</th>
-                    <th>Username</th>
-                    <th>Nama</th>
-                    <th>Department</th>
-                    <th>Akses</th>
-                    <th>Email</th>   
-                    <th>Aktif ?</th>                 
-                  </tr>
-                </thead>
-                <tbody>
-                  @foreach($employees as $employees)
-                  <tr>
-                    <td>{{ $no++ }}</td>
-                    <td>{{ $employees->username }}</td>
-                    <td>{{ $employees->name }}</td>
-                    <td>{{ $employees->department }}</td>
-                    <td>{{ $employees->akses }}</td>
-                    <td>{{ $employees->email }}</td>
-                    <td>{{ $employees->active==1 ? 'Ya' : 'Tidak' }}</td>
-                    <td>
-                      <a href="employee/{{$employees->id}}/show"><button class="btn btn-primary btn-xs">Detail</button></a>
-											@if(Auth::user()->akses == 'admin')
-                      <a href="employee/{{$employees->id}}/edit"><button class="btn btn-warning btn-xs">Edit</button></a>
-                      <button class="btn btn-danger btn-xs" data-delid={{$employees->id}} data-toggle="modal" data-target="#delete"><i class="glyphicon glyphicon-trash"></i> Hapus</button>
-											@endif
-                    </td>                    
-                  </tr>
-                  @endforeach
-                </tbody>
+                    <?php $no=1; ?>
+                    <tr style="background-color: rgb(230, 230, 230);">
+                      <th>No</th>
+                      <th>Username</th>
+                      <th>Nama</th>
+                      <th>Department</th>
+                      <th>Akses</th>
+                      <th>Email</th>   
+                      <th>Aktif ?</th>  
+                      <th>Action</th>                
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @foreach($employees as $employees)
+                    <tr>
+                      <td>{{ $no++ }}</td>
+                      <td>{{ $employees->username }}</td>
+                      <td>{{ $employees->name }}</td>
+                      <td>{{ $employees->department }}</td>
+                      <td>{{ $employees->akses }}</td>
+                      <td>{{ $employees->email }}</td>
+                      <td>{{ $employees->active==1 ? 'Ya' : 'Tidak' }}</td>
+                      <td>
+                        <a href="employee/{{$employees->id}}/show"><button class="btn btn-primary btn-xs">Detail</button></a>
+                        @if(Auth::user()->akses == 'admin' && Illuminate\Support\Str::containsAll(Auth::user()->role, ['All']))
+                            <a href="employee/{{$employees->id}}/edit"><button class="btn btn-warning btn-xs">Edit</button></a>
+                            {{-- <button class="btn btn-danger btn-xs" data-delid={{$employees->id}} data-toggle="modal" data-target="#delete"><i class="glyphicon glyphicon-trash"></i> Hapus</button> --}}
+                        @endif
+                      </td>                    
+                    </tr>
+                    @endforeach
+                  </tbody>
 
               </table>
+
             </div>
             <!-- /.box-body -->
           </div>
@@ -119,19 +130,22 @@
 <script>
   $(function () {
     $('#example1').DataTable()
-    $('#example2').DataTable({
+    $('#karyawan_table').DataTable()
+    $('#report_sell_table').DataTable({
       'paging'      : true,
-      'lengthChange': false,
-      'searching'   : false,
+      'lengthChange': true,
+      'searching'   : true,
       'ordering'    : true,
       'info'        : true,
-      'autoWidth'   : false
+      'autoWidth'   : true
     })
   })
+
+  
 </script>
 
 <!-- modal -->
-<div class="modal fade" id="delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="delete-sell" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content" style="background-color: rgb(200, 200, 200)">
       <div class="modal-header">
@@ -139,12 +153,12 @@
         </button>
         <h4 class="modal-title text-center" id="myModalLabel">Delete Confirmation</h4>
       </div>
-      <form action="{{route('employee.destroy', 'test')}}" method="post">
+      <form action="{{route('report.destroy', 'test')}}" method="post">
         {{method_field('delete')}}
         {{csrf_field()}}
         <div class="modal-body" style="background-color: rgb(230, 230, 230)">
           <p class="text-center">Apakah anda yakin akan menghapus ini?</p>
-          <input type="hidden" name="id_karyawan" id="del_id" value="">
+          <input type="hidden" name="id_sell" id="del_id_sell" value="">
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-danger">Ya, hapus ini</button>
@@ -154,6 +168,7 @@
     </div>
   </div>
 </div>
+
 @include('templates.modal')
 </body>
 </html>

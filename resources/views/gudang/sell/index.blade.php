@@ -31,28 +31,38 @@
             <div class="col-xs-12">
                 <div class="box" style="padding: 0 30px">
                     <div class="box-header">
-                      <h5 class="box-title">Barang yang akan diambil</h5>
-                    </div>
+                      <h5 class="box-title">Barang yang akan diambil</h5>                    
+                    </div>               
+                    
                     <div class="row">
                       <div class="col-xs-8">
                         <div class="box-body">
                           @include('gudang/validation')
+                          
                           <form action="{{ route('sell.store') }}" method="post">
-                            <div class="row">
+                            <div class="row">                              
                               <div class="col-xs-6">
                                 <label>Tanggal</label>
                                 <input required="" class="form-control form-control-sm" type="date" name="tgl_sell" value="{{Carbon\Carbon::parse(now())->format('Y-m-d')}}">
                               </div>
                               <div class="col-xs-6">
                                 <label>Pengambil</label>
-                                <select class="form-control form-control-sm" name="id_karyawan">
+                                <select class="form-control form-control-sm" name="id_karyawan" style="{{Auth::user()->akses=='admin' ? '' : 'pointer-events: none;' }}">
                                   <option value="{{Auth::user()->id}}">{{Auth::user()->name}}</option>
                                   @foreach($employees as $employee)
                                   <option value="{{$employee->id}}">{{$employee->name}}</option>
                                   @endforeach
                                 </select>
                               </div>
-                            </div>                           
+                            </div>     
+                            <div class="col-xs">
+                              <label>Pilih Kategori</label>
+                              <select class="form-control form-control-sm" name="id_kategori" id="id_kategori">                                  
+                                @foreach($categories as $category)
+                                <option value="{{$category->id}}">{{$category->nama_kategori}}</option>
+                                @endforeach
+                              </select>
+                            </div>                      
 
                             <div class="row" style="margin-top: 10px;">
                               <div class="col-xs-6">
@@ -60,13 +70,19 @@
                                 <select class="form-control form-control-sm" name="id_produk" id="id_produk">
                                   <option>- Nama barang -</option>
                                   @foreach($products as $product)
-                                  <option value="{{$product->id}}" data-id="{{$product->id}}">{{$product->nama_produk}} ({{$product->units->nama_unit}})</option>
+                                  <option value="{{old('id_produk',$product->id)}}" data-id="{{$product->id}}">{{$product->nama_produk}} ({{$product->units->nama_unit}}) - {{$product->categories->nama_kategori}}
+                                  </option>
                                   @endforeach
                                 </select>
-                              </div>
+                              </div>                              
                               <div class="col-xs-6">
                                 <label>Jumlah</label>
-                                <input class="form-control" type="number" name="qty">
+                                <input class="form-control" type="number" name="qty" min=0 step=".001">
+                              </div>
+                              <div class="col-xs-12" id="div-batch">
+                                <label>Pilih No Batch</label>
+                                <select class="form-control form-control-sm" name="id_batch" id="id_batch">                                  
+                                </select>
                               </div>
                             </div>                           
                             <div class="row" style="margin-top: 10px;padding-left: 15px;">
@@ -135,7 +151,7 @@
                             <td>{{ $sell->products->kode_produk }}</td>
                             <td>{{ $sell->products->nama_produk }}</td>
                             <td>{{ $sell->employees->name }}</td>
-                            <td><b>{{ $sell->qty }}</b>   {{ $sell->products->units->nama_unit }}</td>
+                            <td><b>{{ number_format($sell->qty,$sell->products->units->dec_unit, '.', ',') }}</b>   {{ $sell->products->units->nama_unit }}</td>
                             <td>{{ $sell->ket_sell }}</td>                            
                           </tr>
                         @empty                      
@@ -188,6 +204,7 @@
 <script src="{{ url('assets/dist/js/adminlte.min.js') }}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{{ url('assets/dist/js/demo.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 <!-- page script -->
 <script>
   $(function () {
@@ -205,8 +222,11 @@
 
 <script type="text/javascript">     
   $(document).ready(function (e) {    
-     $('#id_produk').change(function(){  
+     $('#id_produk').change(function(){ 
       var idx = $(this).val();  
+      
+
+
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -222,9 +242,133 @@
               success: function (data) {                   
                    var srcimage = 'image/' + data.image
                    $("#img-profile").addClass('box-img-sell')
-                   $('#img-profile').attr('src', srcimage)  
-                      
-                   document.getElementById('cekstok').innerText = data.stok_produk
+                   $('#img-profile').attr('src', srcimage)                       
+                   document.getElementById('cekstok').innerText = data.stok_produk + " " + data.nama_unit
+              },
+              error: function (data) {
+                 
+              }
+        });
+        $.ajax({              
+              type: "post",
+              url: "/product/get/batch",
+              data: {
+                  idx: idx
+              },
+              dataType: "json",
+              success: function (data_batch) {                            
+                var len = 0;
+                if(data_batch != null){
+                  len = data_batch.length;
+                }
+
+                if(len > 0){
+                  // Read data_batch and create <option >
+                  for(var i=0; i<len; i++){
+
+                    var id = data_batch[i].id;
+                    var name = data_batch[i].no_batch;
+                    var stok = data_batch[i].stok;
+                    var expired =  moment(data_batch[i].expired).format('DD-MMM-YYYY');
+
+                    var option = "<option value='"+id+"'>"+name+" | Stok = " + stok +" | Expired = " + expired +"</option>"; 
+
+                    $("#id_batch").append(option); 
+                  } 
+                }             
+                   
+              },
+              error: function (data_batch) {
+                 
+              }
+        })                
+     });    
+
+
+     //load awal
+     var idx = $('#id_kategori').val();  
+     
+     $('#div-batch').addClass('hidden');    
+     $('#id_produk').find('option').not(':first').remove();
+     $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+     $.ajax({              
+              type: "post",
+              url: "/product/get/by/category",
+              data: {
+                  idx: idx
+              },
+              dataType: "json",
+              success: function (data) {                
+                var len = 0;
+                if(data != null){
+                  len = data.length;
+                }
+
+                if(len > 0){
+                  // Read data and create <option >
+                  for(var i=0; i<len; i++){
+
+                    var id = data[i].id;
+                    var name = data[i].nama_produk;
+
+                    var option = "<option value='"+id+"'>"+name+"</option>"; 
+
+                    $("#id_produk").append(option); 
+                  } 
+                }             
+                   
+              },
+              error: function (data) {
+                 
+              }
+        })     
+     //pilih kategori
+     $('#id_kategori').change(function(){  
+      var idx = $(this).val(); 
+      //kalau pilih Reagen
+      $('#id_batch').find('option').not(':first').remove();
+      if(idx==7){
+          $('#div-batch').removeClass('hidden');             
+      }else{
+          $('#div-batch').removeClass('hidden').addClass('hidden');
+      }
+       // Empty the dropdown
+       $('#id_produk').find('option').not(':first').remove();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({              
+              type: "post",
+              url: "/product/get/by/category",
+              data: {
+                  idx: idx
+              },
+              dataType: "json",
+              success: function (data) {                
+                var len = 0;
+                if(data != null){
+                  len = data.length;
+                }
+
+                if(len > 0){
+                  // Read data and create <option >
+                  for(var i=0; i<len; i++){
+
+                    var id = data[i].id;
+                    var name = data[i].nama_produk;
+
+                    var option = "<option value='"+id+"'>"+name+"</option>"; 
+
+                    $("#id_produk").append(option); 
+                  } 
+                }             
+                   
               },
               error: function (data) {
                  

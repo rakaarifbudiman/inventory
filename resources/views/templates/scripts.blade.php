@@ -35,5 +35,7 @@
 <script src="{{ url('assets/dist/js/pages/dashboard.js') }}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{{ url('assets/dist/js/demo.js') }}"></script>
-
+{{-- <script src="{{ url('simple-datatables/simple-datatables.js') }}"></script> --}}
+<script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
 <script src="{{ url('js/select2.min.js') }}"></script>

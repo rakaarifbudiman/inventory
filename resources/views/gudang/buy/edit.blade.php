@@ -66,7 +66,7 @@
 									</div>
 									<div class="form-group">
 										<label>Qty Pemesanan</label>
-										<input class="form-control" type="number" name="qty_purchase" value="{{ $purchase->qty_purchase }}">
+										<input class="form-control" type="number" name="qty_purchase" value="{{ number_format($purchase->qty_purchase,$purchase->products->units->dec_unit, '.', ',')}}" min=0>
 									</div>
 									<div class="form-group">
 										<label>Satuan Produk</label>
@@ -74,11 +74,19 @@
 									</div>
 									<div class="form-group">
 										<label>Tanggal Pemesanan</label>
-                                        <input required="" class="form-control form-control-sm" type="date" name="tgl_purchase" value="{{Carbon\Carbon::parse($purchase->tgl_purchase)->format('Y-m-d')}}">										
+                                        <input required="" class="form-control form-control-sm" type="date" name="tgl_purchase" value="{{$purchase->tgl_purchase ? Carbon\Carbon::parse($purchase->tgl_purchase)->format('Y-m-d') : ''}}">										
 									</div>
                                     <div class="form-group">
 										<label>Tanggal Penerimaan</label>
                                         <input required="" class="form-control form-control-sm" type="date" name="tgl_terima" value="{{Carbon\Carbon::parse($purchase->tgl_terima)->format('Y-m-d')}}">										
+									</div>	
+									<div class="form-group" {{$purchase->products->categories->kode_kategori=='REA' ? '' : 'hidden'}}>
+										<label>Nomor Batch</label>
+                                        <input class="form-control" type="text" name="no_batch" value="{{ $purchase->id_batch ? $purchase->batches->no_batch : ''}}">										
+									</div>
+									<div class="form-group" {{$purchase->products->categories->kode_kategori=='REA' ? '' : 'hidden'}}>
+										<label>Expired Date</label>
+                                        <input class="form-control form-control-sm" type="date" name="expired" value="{{$purchase->expired ? Carbon\Carbon::parse($purchase->expired)->format('Y-m-d') : ''}}">										
 									</div>									
 									<div class="form-group">
 										<label>Keterangan Pemesanan</label>

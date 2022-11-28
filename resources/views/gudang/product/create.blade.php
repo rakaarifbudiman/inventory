@@ -36,47 +36,52 @@
 					            	@include('gudang/validation')
 					            	@include('gudang/notification')
 					            	<form action="{{ url('/product') }}" method="post" enctype="multipart/form-data">
+										<div class="form-group">
+											<label>Kategori</label>
+											<select class="form-control" name="id_kategori" id="id_kategori">
+												<option>- Kategori Barang -</option>
+												@foreach($roles as $role)
+													@foreach($categories as $category)														
+														<option value="{{old('id_kategori',$category->id)}}" 
+															{{$role==$category->nama_kategori ? '' : 'hidden'}}>
+															{{$category->nama_kategori}}
+														</option>														
+													@endforeach
+												@endforeach
+											</select>
+										</div>
 					            		<div class="form-group">
 											<label>Kode Barang</label>
-											<input required="" class="form-control" type="text" name="kode_produk" value="{{old('kode_produk')}}">
+											<input required="" class="form-control" type="text" name="kode_produk" id="kode_produk"  value="{{old('kode_produk')}}">
 										</div>
 										<div class="form-group">
 											<label>Nama Barang</label>
 											<input required="" class="form-control" type="text" name="nama_produk" value="{{old('nama_produk')}}">
-										</div>
-										<div class="form-group">
-											<label>Kategori</label>
-											<select class="form-control" name="id_kategori" >
-												<option>- Kategori Barang -</option>
-												@foreach($categories as $category)
-												<option value="{{old('id_kategori',$category->id)}}">{{$category->nama_kategori}}</option>
-												@endforeach
-											</select>
-										</div>
+										</div>										
 										<div class="form-group">
 											<label>Foto Barang</label>
 								            <input type="file" name="image" value="" class="form-control">
 							            </div>
 										<div class="form-group">
 											<label>Stok</label>
-											<input required="" class="form-control" type="number" name="stok_produk" value="{{old('stok_produk')}}">
+											<input required="" class="form-control" type="number" name="stok_produk" value="{{old('stok_produk')}}" min=0>
 										</div>
 										<div class="form-group">
 											<label>Satuan</label>
 											<select class="form-control" name="id_unit">
 												<option>-- Satuan Barang --</option>
 												@foreach($units as $unit)
-												<option value="{{ $unit->id }}">{{ $unit->nama_unit }}</option>
+												<option value="{{ old('nama_unit',$unit->id) }}">{{ $unit->nama_unit }}</option>
 												@endforeach
 											</select>
 										</div>
 										<div class="form-group">
 											<label>Safety Stok</label>
-											<input required="" class="form-control" type="number" name="safety_stok">
+											<input required="" class="form-control" type="number" name="safety_stok" value="{{old('safety_stok')}}" min=0>
 										</div>
 										<div class="form-group">
 											<label>Max Stok</label>
-											<input required="" class="form-control" type="number" name="max_stok">
+											<input required="" class="form-control" type="number" name="max_stok" value="{{old('max_stok')}}" min=0>
 										</div>
 										<div class="form-group">
 											<label>Expired Date</label>
@@ -84,11 +89,11 @@
 										</div>
 										<div class="form-group">
 											<label>Lokasi Barang</label>
-											<input required="" class="form-control" type="text" name="lokasi">
+											<input required="" class="form-control" type="text" name="lokasi" value="{{old('lokasi')}}">
 										</div>
 										<div class="form-group">
 											<label>Keterangan</label>
-											<textarea class="form-control" type="text" name="ket_produk" rows="4" placeholder="Masukkan keterangan ..."></textarea>
+											<textarea class="form-control" type="text" name="ket_produk" rows="4" placeholder="Masukkan keterangan ...">{{old('ket_produk')}}</textarea>
 											<!-- <input required="" class="form-control" type="text" name="stok_produk"> -->
 										</div>
 										<div>
@@ -112,5 +117,32 @@
 		</aside>
 	</div>
 @include('templates.scripts')
+
+<script type="text/javascript">     
+	$(document).ready(function (e) {    
+	   $('#id_kategori').change(function(){ 		
+		var idx = $(this).val(); 		
+		  $.ajaxSetup({
+			  headers: {
+				  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+			  }
+		  });
+		  $.ajax({              
+				type: "post",
+				url: "/product/get/newnumber",
+				data: {
+					idx: idx
+				},
+				dataType: "json",
+				success: function (data) {     					
+					 document.getElementById('kode_produk').value = data
+				},
+				error: function (data) {
+				   
+				}
+		  })        
+	   });    
+	});  
+	</script>
 </body>
 </html>

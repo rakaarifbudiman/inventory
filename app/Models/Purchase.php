@@ -12,7 +12,6 @@ class Purchase extends Model implements Auditable
 	protected $guarded  = ['created_at', 'updated_at'];
 
 	public function products(){
-
         return $this->belongsTo('App\Models\Product', 'id_produk');
     }
 
@@ -22,6 +21,10 @@ class Purchase extends Model implements Auditable
 
     public function creators(){
         return $this->belongsTo('App\Models\User', 'created_by');
+    }
+
+    public function batches(){
+        return $this->belongsTo('App\Models\Batch', 'id_batch');
     }
     
 }

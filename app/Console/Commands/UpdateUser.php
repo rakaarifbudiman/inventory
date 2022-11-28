@@ -41,6 +41,7 @@ class UpdateUser extends Command
             'password' => $data->password,
             'name' => $data->name, 
             'active' => $data->active,
+            'iccs' => 1,
                 ]);
         }          
         

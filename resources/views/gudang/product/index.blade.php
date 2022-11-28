@@ -66,17 +66,19 @@
                   <tr>
                     <td>
                       <a href="product/{{$product->id}}/show"><button class="btn btn-primary btn-xs">Detail</button></a>
-											@if(Auth::user()->akses == 'admin')
-	                      <a href="product/{{$product->id}}/edit"><button class="btn btn-warning btn-xs">Edit</button></a>
-	                      <button class="btn btn-danger btn-xs" data-delproduk={{$product->id}} data-toggle="modal" data-target="#delete-produk"><i class="glyphicon glyphicon-trash"></i> Hapus</button>
-											@endif
+											@can('edit',$product)
+                        <a href="product/{{$product->id}}/edit"><button class="btn btn-warning btn-xs">Edit</button></a>
+                        {{-- <a href="product_conversion/{{$product->id}}/edit"><button class="btn btn-success  btn-xs">Conversions</button></a> --}}
+                        <button class="btn btn-danger btn-xs" data-delproduk={{$product->id}} data-toggle="modal" data-target="#delete-produk"><i class="glyphicon glyphicon-trash"></i> Hapus</button>
+                      @endcan	                      
+											
                     </td>
                     <td>{{ $no++ }}</td>
                     <td>{{ $product->kode_produk }}</td>
                     <td>{{ $product->nama_produk }}</td>
                     <td>{{ $product->categories->nama_kategori }}</td>
                     <td><img src="{{asset('image/'.$product->image)}}" alt="gambar"></td>
-                    <td>{{ $product->stok_produk }}</td>
+                    <td>{{ number_format($product->stok_produk,$product->units->dec_unit, '.', ',') }}</td>
                     <td>{{ $product->units->nama_unit }}</td>
                     <td>{{ $product->safety_stok }}</td>
                     <td>{{ $product->max_stok }}</td>

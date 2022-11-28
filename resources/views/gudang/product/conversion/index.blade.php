@@ -2,7 +2,7 @@
 <html>
 <head>
 	@include('templates.head')
-  <title>Data Agama</title>
+  <title>Data Satuan</title>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -20,7 +20,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Data Agama
+        Data Satuan
       </h1>
 
     </section>
@@ -32,15 +32,20 @@
                 <div class="box" style="padding: 0 30px">
                   <div class="box-header">
                     <div class="box-header">
-                      <h5 class="box-title">Tambah data agama</h5>
+                      <h5 class="box-title">Tambah satuan</h5>
                     </div>
                     <div class="box-body">
                       @include('gudang/validation')
-                      <form action="{{ url('/agama') }}" method="post">
+                      <form action="{{ url('/unit') }}" method="post">
                         <div>
-                          <label>Agama</label>
-                          <!-- <input class="form-control" type="text" name="nama_agama"> -->
-                          {!!Form::text('nama_agama', null, ['class'=>'form-control'])!!}
+                          <label>Satuan</label>
+                          <!-- <input class="form-control" type="text" name="nama_unit"> -->
+                          {!!Form::text('nama_unit', null, ['class'=>'form-control'])!!}
+                        </div>
+                        <div>
+                          <label>Desimal</label>
+                          <!-- <input class="form-control" type="text" name="nama_unit"> -->
+                          {!!Form::number('dec_unit', null, ['class'=>'form-control'])!!}
                         </div><br><br>
                         <div>
                           <input class="btn btn-primary" type="submit" name="submit" value="Tambahkan">
@@ -59,7 +64,7 @@
           <div class="box" style="padding: 0 30px">
             <div class="box-header">
               <div class="box-header">
-                <h3 class="box-title">Data agama karyawan</h3>
+                <h3 class="box-title">Data satuan</h3>
               </div>
               <!-- /.box-header -->
               <div class="box-body">
@@ -69,21 +74,25 @@
                     <?php $no=1; ?>
                     <tr style="background-color: rgb(230, 230, 230);">
                       <th>No</th>
-                      <th>Agama</th>
-                      <th>Action</th>                 
+                      <th>Dari</th>
+                      <th>Ke</th>
+                      <th>Nilai Konversi</th>                 
                     </tr>
                   </thead>
                   <tbody>
-                    @foreach($agamas as $agamas)
+                    @forelse($conversions as $konversi)
                     <tr>
                       <td>{{ $no++ }}</td>
-                      <td>{{ $agamas->nama_agama }}</td>
+                      <td>{{ $konversi->from_units->nama_unit }}</td>
+                      <td>{{ $konversi->to_units->nama_unit }}</td>
+                      <td>{{ $konversi->nilai_konversi }}</td>
                       <td>
-                        <a href="{{ url('agama') }}/{{$agamas->id_agama}}/edit"><button class="btn btn-warning btn-xs">Edit</button></a>
-                        <button class="btn btn-danger btn-xs" data-delid={{$agamas->id_agama}} data-toggle="modal" data-target="#delete"><i class="glyphicon glyphicon-trash"></i> Hapus</button>
+                        <a href="{{ url('unit') }}/{{$konversi->id}}/edit"><button class="btn btn-warning btn-xs">Edit</button></a>
+                        <button class="btn btn-danger btn-xs" data-delid={{$konversi->id}} data-toggle="modal" data-target="#delete"><i class="glyphicon glyphicon-trash"></i> Hapus</button>
                       </td>
                     </tr>
-                    @endforeach
+                    @empty
+                    @endforelse
                   </tbody>
                 </table>
               </div>
@@ -150,12 +159,12 @@
         </button>
         <h4 class="modal-title text-center" id="myModalLabel">Delete Confirmation</h4>
       </div>
-      <form action="{{route('agama.destroy', 'test')}}" method="post">
+      <form action="{{route('unit.destroy', 'test')}}" method="post">
         {{method_field('delete')}}
         {{csrf_field()}}
         <div class="modal-body" style="background-color: rgb(230, 230, 230)">
           <p class="text-center">Apakah anda yakin akan menghapus ini?</p>
-          <input type="hidden" name="id_agama" id="del_id" value="">
+          <input type="hidden" name="id_unit" id="del_id" value="">
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-danger">Ya, hapus ini</button>
@@ -168,3 +177,5 @@
 @include('templates.modal')
 </body>
 </html>
+
+

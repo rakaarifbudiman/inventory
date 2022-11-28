@@ -66,7 +66,7 @@
 									</div><br>
 									<div class="form-group">
 										<label>Satuan Produk</label>
-										{{ Form::select('id_unit', \App\Models\Unit::pluck('nama_unit', 'id'), NULL, ['class'=>'form-control']) }}
+										{{ Form::select('id_unit', \App\Models\Unit::pluck('nama_unit', 'id'), NULL, ['class'=>'form-control','style'=>'pointer-events: none;']) }}
 									</div>
 									<div class="form-group">
 										<label>Safety Stok</label>
@@ -79,6 +79,10 @@
 									<div class="form-group">
 										<label>Lokasi</label>
 										<input class="form-control" type="text" name="lokasi" value="{{ $products->lokasi }}">
+									</div>
+									<div class="form-group" {{$products->categories->nama_kategori=='Reagen' ? '' : 'hidden'}}>
+										<label>Expired Date</label>
+										<input class="form-control" type="date" name="expired" value="{{$products->expired==null ? '' : Carbon\Carbon::parse($products->expired)->format('Y-m-d')}}">
 									</div>
 									<div class="form-group">
 										<label>Keterangan</label>
