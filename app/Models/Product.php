@@ -13,16 +13,16 @@ class Product extends Model implements Auditable
 
 	public function categories()
     {
-        return $this->belongsTo('App\Models\Category', 'id_kategori');
+        return $this->belongsTo('App\Models\Category', 'id_kategori')->withDefault();
     }   
 
     public function units()
     {
-        return $this->belongsTo('App\Models\Unit', 'id_unit');
+        return $this->belongsTo('App\Models\Unit', 'id_unit')->withDefault();
     }
 
     public function conversions()
     {
-        return $this->hasMany('App\Models\ProductConversion','id_produk');
+        return $this->hasMany('App\Models\ProductConversion','id_produk')->withDefault();
     }
 }

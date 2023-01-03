@@ -28,6 +28,7 @@
   <link rel="stylesheet" href="{{ url('assets/bower_components/bootstrap-daterangepicker/daterangepicker.css') }}">
   <!-- bootstrap wysihtml5 - text editor -->
   <link rel="stylesheet" href="{{ url('assets/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css') }}">
+
  {{--  <link rel="stylesheet" href="{{ url('simple-datatables/style.min.css') }}"> --}} 
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
   <link rel="icon" href="https://img.freepik.com/free-icon/stationary_318-752190.jpg?size=338&ext=jpg&ga=GA1.2.1963718950.1666756200&semt=sph" type="image/x-icon">

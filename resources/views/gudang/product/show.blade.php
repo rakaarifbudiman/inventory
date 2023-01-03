@@ -39,6 +39,7 @@
                           <h3 class="box-title">Detail data produk</h3>
                         </div>                        
                           <p class="card-text "><b>{{ $products->kode_produk }} : {{ $products->nama_produk }}</b><br>
+                            <b>No Katalog</b> : {{ $products->no_catalog }}<br>       
                             <b>Kategori</b> : {{ $products->categories->nama_kategori }}<br>                            
                             <b>Safety Stok</b> : {{ $products->safety_stok }}<br>
                             <b>Max Stok</b> : {{ $products->max_stok }}<br>
@@ -84,6 +85,9 @@
                   <thead>
                     <?php $no=1; ?>
                     <tr style="background-color: rgb(230, 230, 230);">
+                      @can('edit',$products)
+                      <th>Action</th>
+                      @endcan
                       <th>No</th>
                       <th>No Batch</th>
                       <th>Expired</th>                      
@@ -95,6 +99,11 @@
                   <tbody>
                     @foreach($batches as $batch)
                     <tr>
+                      @can('edit',$batch->products)
+                      <td>
+                        <a href="/batch/{{$batch->id}}/edit"><button class="btn btn-warning btn-xs">Edit</button></a>                        
+                      </td>
+                      @endcan	  
                       <td>{{ $no++ }}</td>                      
                       <td>{{ $batch->no_batch }}</td>
                       <td>{{ $batch->expired ? Carbon\Carbon::parse($batch->expired)->format('d-M-y') : '' }}</td>                      

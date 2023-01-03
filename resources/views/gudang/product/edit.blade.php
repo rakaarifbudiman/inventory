@@ -47,6 +47,10 @@
 										<input class="form-control" type="text" name="kode_produk" value="{{ $products->kode_produk }}">
 									</div>
 									<div class="form-group">
+										<label>No Katalog</label>
+										<input class="form-control" type="text" name="no_catalog" value="{{ $products->no_catalog }}">
+									</div>
+									<div class="form-group">
 										<label>Nama Produk</label>
 										<input class="form-control" type="text" name="nama_produk" value="{{ $products->nama_produk }}">
 									</div>
@@ -54,6 +58,10 @@
 										<label>Kategori Produk</label>
 										{{ Form::select('id_kategori', \App\Models\Category::pluck('nama_kategori', 'id'), NULL, ['class'=>'form-control']) }}
 									</div><br>
+									<div class="form-group">
+										<label>Jenis Reagen</label>
+										{{ Form::select('jenis_reagen', ['Padat'=>'Padat','Cair'=>'Cair'], $products->jenis_reagen, ['class'=>'form-control']) }}
+									</div><br>									
 									<div class="form-group">
 										<label>Foto Produk</label><br>
 										<img src="{{asset('image/'.$products->image)}}" alt="gambar">

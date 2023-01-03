@@ -36,6 +36,7 @@
 					            	@include('gudang/validation')
 					            	@include('gudang/notification')
 					            	<form action="{{ url('/employee') }}" method="post">
+										@csrf
 					            		<div>
 											<label>Username</label>
 											<input required="" class="form-control" type="text" name="username">

@@ -246,7 +246,7 @@
                    $("#img-profile").addClass('box-img-purchase')
                    $('#img-profile').attr('src', srcimage)  
                       
-                   document.getElementById('cekstok').innerText = data.stok_produk
+                   document.getElementById('cekstok').innerText = Math.trunc(data.stok_produk)  
                    document.getElementById('safetystok').innerText = data.safety_stok
                    document.getElementById('maxstok').innerText = data.max_stok
               },

@@ -55,6 +55,7 @@ Route::group(['middleware'=>'auth'], function(){
 		Route::resource('unit', 'UnitController');
 		Route::resource('product_conversion', 'ProductConversionController');
 		Route::resource('user', 'UserController');
+		Route::resource('batch', 'BatchController');
 		Route::resource('audit', 'AuditController');
 		Route::resource('gender', 'GenderController');
 		Route::delete('/sell/{id_sell}', 'SellController@destroy');

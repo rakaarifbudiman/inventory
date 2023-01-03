@@ -211,10 +211,8 @@ class ProductController extends Controller
      */
     public function edit($id_produk, Product $products)
     {
-        if(Auth::user()->akses !== 'admin'){
-            return back()->with('error','Gagal...Kamu tidak punya otorisasi');
-        }
-        $products = Product::findOrFail($id_produk);        
+        $products = Product::findOrFail($id_produk);         
+        $this->authorize('edit',$products);       
         return view('gudang/product/edit', compact('products'));
     }
 
@@ -227,26 +225,25 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id_produk)
     {
-        if(Auth::user()->akses !== 'admin'){
-            return back()->with('error','Gagal...Kamu tidak punya otorisasi');
-        }
-
         if($request->stok_produk<0 || $request->safety_stok<0 || $request->max_stok<0){
             return back()->with('error','Gagal... Stok/Safety Stok/Max Stok tidak boleh < 0');
         }
 
         $products = Product::find($id_produk);
+        $this->authorize('edit',$products);   
         $olds= getoldvalues('mysql','products',$products);
         $old_stok = $olds["old"]["stok_produk"];   
 
         $products->kode_produk = $request->kode_produk;
         $products->nama_produk = $request->nama_produk;
         $products->id_kategori = $request->id_kategori;
+        $products->jenis_reagen = $request->jenis_reagen;
         $products->stok_produk = $request->stok_produk;
         /* $products->id_unit     = $request->id_unit; */
         $products->lokasi      = $request->lokasi;
         $products->ket_produk  = $request->ket_produk;
         $products->expired  = $request->expired;
+        $products->expired  = $request->no_catalog;
 
         if($request->hasFile('image')){
             $file = $request->file('image');
@@ -279,7 +276,7 @@ class ProductController extends Controller
                 ]);
             }
         $products->save();
-       
+        
         return redirect('product')->with('pesan', 'Data berhasil di update');
     }
 
@@ -295,7 +292,8 @@ class ProductController extends Controller
             return back()->with('error','Gagal...Kamu tidak punya otorisasi');
         }
         
-      $products = Product::find($request->id_produk);      
+      $products = Product::find($request->id_produk);     
+      $this->authorize('edit',$products);    
       $sell =Sell::where('id_produk',$products->id)->count();
       $purchase = Purchase::where('id_produk',$products->id)->count();   
         if($sell>0 || $purchase>0){

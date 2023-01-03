@@ -13,11 +13,10 @@
           <div class="modal-body" style="background-color: rgb(230, 230, 230)">            
             <div class="row">                        
                 <div class="col-sm-8">                    
-                    <input class="form-control form-control-sm text-center" type="number" id="qty" name="qty" value="{{number_format($batch->stok,$batch->products->units->dec_unit, '.', ',')}}" min=0>                                                 
+                    <input class="form-control form-control-sm text-center" type="number" id="qty" name="qty" value="{{number_format($batch->stok,$batch->products->units->dec_unit, '.', ',')}}" min=0 step=".001">                                                 
                 </div>  
                 <div class="col-sm-4">    
-                    <input class="form-control form-control-sm text-center" type="text" value="{{$batch->products->units->nama_unit}}" readonly>               
-                   
+                    <input class="form-control form-control-sm text-center" type="text" value="{{$batch->products->units->nama_unit}}" readonly>                                  
                 </div>                               
             </div>               
             <input class="form-control form-control-sm" type="hidden" name="tgl_sell" value="{{Carbon\Carbon::parse(now())->format('Y-m-d')}}">

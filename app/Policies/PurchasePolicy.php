@@ -23,6 +23,6 @@ class PurchasePolicy
 
     public function edit(User $user, Purchase $purchase)
     {            
-        return $user->akses == 'admin' && Str::containsAll($user->role, [$purchase->products->categories->nama_kategori]);       
+        return ($user->akses == 'admin' && (Str::containsAll($user->role, [$purchase->products->categories->nama_kategori] || $user->admin_sap==1)));       
     }
 }

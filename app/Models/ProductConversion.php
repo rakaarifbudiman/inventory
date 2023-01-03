@@ -11,15 +11,15 @@ class ProductConversion extends Model
 
     public function from_units()
     {
-        return $this->belongsTo('App\Models\Unit', 'from_unit');
+        return $this->belongsTo('App\Models\Unit', 'from_unit')->withDefault();
     }
 
     public function to_units()
     {
-        return $this->belongsTo('App\Models\Unit', 'to_unit');
+        return $this->belongsTo('App\Models\Unit', 'to_unit')->withDefault();
     }
 
     public function products(){
-        return $this->belongsTo('App\Models\Product', 'id_produk');
+        return $this->belongsTo('App\Models\Product', 'id_produk')->withDefault();
     }
 }

@@ -13,20 +13,20 @@ class Sell extends Model implements Auditable
 	protected $guarded  = ['created_at', 'updated_at','id'];
 
 	public function employees(){
-        return $this->belongsTo('App\Models\User', 'id_karyawan');
+        return $this->belongsTo('App\Models\User', 'id_karyawan')->withDefault();
     }
 
     public function creators(){
-        return $this->belongsTo('App\Models\User', 'created_by');
+        return $this->belongsTo('App\Models\User', 'created_by')->withDefault();
     }
 
     public function products(){
 
-        return $this->belongsTo('App\Models\Product', 'id_produk');
+        return $this->belongsTo('App\Models\Product', 'id_produk')->withDefault();
     }
 
     public function batches(){
-        return $this->belongsTo('App\Models\Batch', 'id_batch');
+        return $this->belongsTo('App\Models\Batch', 'id_batch')->withDefault();
     }
     
 }

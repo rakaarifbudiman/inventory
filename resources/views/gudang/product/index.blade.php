@@ -50,6 +50,7 @@
                     <th>Action</th>
                     <th>No</th>
                     <th>Kode Barang</th>
+                    <th>No Katalog</th>
                     <th>Nama</th>
                     <th>Kategori</th>
                     <th>Foto</th>
@@ -75,6 +76,7 @@
                     </td>
                     <td>{{ $no++ }}</td>
                     <td>{{ $product->kode_produk }}</td>
+                    <td>{{ $product->no_catalog }}</td>
                     <td>{{ $product->nama_produk }}</td>
                     <td>{{ $product->categories->nama_kategori }}</td>
                     <td><img src="{{asset('image/'.$product->image)}}" alt="gambar"></td>

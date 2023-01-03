@@ -13,6 +13,6 @@ class Batch extends Model implements Auditable
 
     public function products(){
 
-        return $this->belongsTo('App\Models\Product', 'id_produk');
+        return $this->belongsTo('App\Models\Product', 'id_produk')->withDefault();
     }
 }
